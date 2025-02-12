@@ -1,5 +1,5 @@
-use crate::states::*;
 use anchor_lang::prelude::*;
+use crate::states::*;
 
 pub fn handle_initialize(ctx: Context<Initialize>) -> Result<()> {
     let counter = &mut ctx.accounts.counter;
