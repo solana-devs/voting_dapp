@@ -27,4 +27,8 @@ pub mod voting {
         instructions::handle_create_poll(ctx, description, start, end)
     }
 
+    pub fn vote(ctx: Context<Vote>, poll_id: u64, cid: u64) -> Result<()> {
+        instructions::handle_vote(ctx, poll_id, cid)
+    }
+
 }
