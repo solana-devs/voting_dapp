@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::states::*;
 
-pub fn handle_initialize(ctx: Context<Initialize>) -> Result<()> {
+pub fn handle_initialize(ctx: Context<InitializeContext>) -> Result<()> {
     let counter = &mut ctx.accounts.counter;
     counter.count = 0;
 
@@ -12,7 +12,7 @@ pub fn handle_initialize(ctx: Context<Initialize>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct InitializeContext<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 

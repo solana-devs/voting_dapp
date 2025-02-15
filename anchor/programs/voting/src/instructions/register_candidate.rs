@@ -3,7 +3,7 @@ use crate::errors::ErrorCode::*;
 use crate::states::*;
 
 pub fn handle_register_candidate(
-    ctx: Context<RegisterCandidate>,
+    ctx: Context<RegisterCandidateContext>,
     poll_id: u64,
     name: String,
 ) -> Result<()> {
@@ -32,7 +32,7 @@ pub fn handle_register_candidate(
 
 #[derive(Accounts)]
 #[instruction(poll_id: u64)]
-pub struct RegisterCandidate<'info> {
+pub struct RegisterCandidateContext<'info> {
     #[account(
         mut,
         seeds = [poll_id.to_le_bytes().as_ref()],
