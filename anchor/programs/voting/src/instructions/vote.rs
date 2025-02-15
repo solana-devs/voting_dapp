@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use crate::errors::ErrorCode::*;
 use crate::states::*;
 
-pub fn handle_vote(ctx: Context<Vote>, poll_id: u64, cid: u64) -> Result<()> {
+pub fn handle_vote(ctx: Context<VoteContext>, poll_id: u64, cid: u64) -> Result<()> {
     let voter = &mut ctx.accounts.voter;
     let candidate = &mut ctx.accounts.candidate;
     let poll = &mut ctx.accounts.poll;
@@ -30,7 +30,7 @@ pub fn handle_vote(ctx: Context<Vote>, poll_id: u64, cid: u64) -> Result<()> {
 
 #[derive(Accounts)]
 #[instruction(poll_id: u64, cid: u64)]
-pub struct Vote<'info> {
+pub struct VoteContext<'info> {
     #[account(
         mut,
         seeds = [poll_id.to_le_bytes().as_ref()],

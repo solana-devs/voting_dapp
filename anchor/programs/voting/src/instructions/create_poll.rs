@@ -3,7 +3,7 @@ use crate::errors::ErrorCode;
 use crate::states::*;
 
 pub fn handle_create_poll(
-    ctx: Context<CreatePoll>,
+    ctx: Context<CreatePollContext>,
     description: String,
     start: u64,
     end: u64,
@@ -26,7 +26,7 @@ pub fn handle_create_poll(
 }
 
 #[derive(Accounts)]
-pub struct CreatePoll<'info> {
+pub struct CreatePollContext<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 
