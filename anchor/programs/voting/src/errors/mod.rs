@@ -8,5 +8,10 @@ pub enum ErrorCode {
     PollDoesNotExist,
     #[msg("Candidate cannot register twice")]
     CandidateAlreadyRegistered,
-    
+    #[msg("Candidate is not in the poll")]
+    CandidateNotRegistered,
+    #[msg("Voter cannot vote twice")]
+    VoterAlreadyVoted,
+    #[msg("Poll not currently active")]
+    PollNotActive,
 }

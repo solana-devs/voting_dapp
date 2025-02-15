@@ -3,7 +3,28 @@ use crate::errors::ErrorCode::*;
 use crate::states::*;
 
 pub fn handle_vote(ctx: Context<Vote>, poll_id: u64, cid: u64) -> Result<()> {
-    
+    let voter = &mut ctx.accounts.voter;
+    let candidate = &mut ctx.accounts.candidate;
+    let poll = &mut ctx.accounts.poll;
+
+    if !candidate.has_registered || candidate.poll_id != poll_id {
+        return Err(CandidateNotRegistered.into());
+    }
+
+    if voter.has_voted {
+        return Err(VoterAlreadyVoted.into());
+    }
+
+    let current_timestamp = Clock::get()?.unix_timestamp as u64;
+    if current_timestamp < poll.start || current_timestamp > poll.end {
+        return Err(PollNotActive.into());
+    }
+
+    voter.poll_id = poll_id;
+    voter.cid = cid;
+    voter.has_voted = true;
+
+    candidate.votes += 1;
     Ok(())
 }
 
