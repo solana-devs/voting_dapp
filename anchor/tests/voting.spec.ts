@@ -72,4 +72,43 @@ describe('voting', () => {
     const poll = await program.account.poll.fetch(pollPda)
     console.log('Poll:', poll)
   })
+
+  it('Registers a candidate', async () => {
+    const user = provider.wallet
+
+    const [pollPda] = await PublicKey.findProgramAddress(
+      [PID.toArrayLike(Buffer, 'le', 8)], // Seed based on the incremented count
+      program.programId
+    )
+
+    const [registerationsPda] = await PublicKey.findProgramAddress(
+      [Buffer.from('registerations')],
+      program.programId
+    )
+
+    const regs = await program.account.registerations.fetch(registerationsPda)
+    CID = regs.count.add(new anchor.BN(1))
+
+    const candidateName = `Candidate #${CID}`
+    const [candidatePda] = await PublicKey.findProgramAddress(
+      [
+        PID.toArrayLike(Buffer, 'le', 8), // Little-endian bytes of poll_id
+        CID.toArrayLike(Buffer, 'le', 8),
+      ],
+      program.programId
+    )
+
+    await program.rpc.registerCandidate(PID, candidateName, {
+      accounts: {
+        poll: pollPda,
+        candidate: candidatePda,
+        registerations: registerationsPda,
+        user: user.publicKey,
+        systemProgram: SystemProgram.programId,
+      },
+    })
+
+    const candidate = await program.account.candidate.fetch(candidatePda)
+    console.log('Candidate:', candidate)
+  })
 })
