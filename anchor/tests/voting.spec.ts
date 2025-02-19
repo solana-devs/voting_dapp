@@ -111,4 +111,56 @@ describe('voting', () => {
     const candidate = await program.account.candidate.fetch(candidatePda)
     console.log('Candidate:', candidate)
   })
+  
+  it('Votes for a candidate', async () => {
+    const user = provider.wallet
+
+    // Derive the PDA for the poll
+    const [pollPda] = await PublicKey.findProgramAddress(
+      [PID.toArrayLike(Buffer, 'le', 8)],
+      program.programId
+    )
+
+    // Derive the PDA for the candidate
+    const [candidatePda] = await PublicKey.findProgramAddress(
+      [PID.toArrayLike(Buffer, 'le', 8), CID.toArrayLike(Buffer, 'le', 8)],
+      program.programId
+    )
+
+    // Derive the PDA for the voter account
+    const [voterPda] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from('voter'),
+        PID.toArrayLike(Buffer, 'le', 8),
+        user.publicKey.toBuffer(),
+      ],
+      program.programId
+    )
+
+    const candidate = await program.account.candidate.fetch(candidatePda)
+    if (!candidate) {
+      throw new Error(`Candidate with ID ${CID} for poll ID ${PID} not found`)
+    }
+
+    // Perform the vote
+    await program.rpc.vote(PID, CID, {
+      accounts: {
+        user: user.publicKey,
+        poll: pollPda,
+        candidate: candidatePda,
+        voter: voterPda,
+        systemProgram: SystemProgram.programId,
+      },
+    })
+
+    const voterAccount = await program.account.voter.fetch(voterPda)
+    console.log('Voter Account:', voterAccount)
+
+    // Fetch and verify the updated candidate votes
+    const updatedCandidate = await program.account.candidate.fetch(candidatePda)
+    console.log(
+      'Candidate Votes after voting:',
+      updatedCandidate.votes.toString()
+    )
+  })
 })
