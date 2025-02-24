@@ -1,0 +1,260 @@
+{
+  "address": "Fg6PaFpoGXkYsidMpWxqSWFEXvUfsicV7opJ2zG9JWxD",
+  "metadata": {
+    "name": "multisig",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "approve_transaction",
+      "docs": [
+        "Approve a transaction"
+      ],
+      "discriminator": [
+        224,
+        39,
+        88,
+        181,
+        36,
+        59,
+        155,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "transaction",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "execute_transaction",
+      "docs": [
+        "Execute transaction if threshold is met"
+      ],
+      "discriminator": [
+        231,
+        173,
+        49,
+        91,
+        235,
+        24,
+        68,
+        19
+      ],
+      "accounts": [
+        {
+          "name": "transaction",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize a multisig account with signers and threshold"
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "signers",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "propose_transaction",
+      "docs": [
+        "Propose a new transaction"
+      ],
+      "discriminator": [
+        35,
+        204,
+        169,
+        240,
+        74,
+        70,
+        31,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true
+        },
+        {
+          "name": "transaction",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "proposer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "target",
+          "type": "pubkey"
+        },
+        {
+          "name": "data",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Multisig",
+      "discriminator": [
+        224,
+        116,
+        121,
+        186,
+        68,
+        161,
+        79,
+        236
+      ]
+    },
+    {
+      "name": "Transaction",
+      "discriminator": [
+        11,
+        24,
+        174,
+        129,
+        203,
+        117,
+        242,
+        23
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidThreshold",
+      "msg": "Invalid threshold value"
+    },
+    {
+      "code": 6001,
+      "name": "Unauthorized",
+      "msg": "Signer not authorized"
+    },
+    {
+      "code": 6002,
+      "name": "AlreadyApproved",
+      "msg": "Transaction already approved by this signer"
+    },
+    {
+      "code": 6003,
+      "name": "NotEnoughApprovals",
+      "msg": "Not enough approvals to execute"
+    }
+  ],
+  "types": [
+    {
+      "name": "Multisig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signers",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Transaction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "multisig",
+            "type": "pubkey"
+          },
+          {
+            "name": "target",
+            "type": "pubkey"
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "name": "approvals",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
