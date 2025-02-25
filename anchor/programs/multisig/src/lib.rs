@@ -52,8 +52,8 @@ pub mod multisig {
     }
 
     /// Execute transaction if threshold is met
-    pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
-        let tx = &ctx.accounts.transaction;
+    pub fn execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Result<()> {
+        let tx = &mut ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
 
         require!(multisig.signers.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
@@ -64,7 +64,7 @@ pub mod multisig {
         anchor_lang::solana_program::program::invoke(
             &anchor_lang::solana_program::instruction::Instruction {
                 program_id: tx.target,
-                accounts: vec![], 
+                accounts: vec![/* Add metas */], 
                 data: tx.data.clone(),
             },
             &[],
@@ -116,7 +116,7 @@ pub struct ApproveTransaction<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ExecuteTransaction<'info> {
+pub struct ExecuteTransactionContext<'info> {
     #[account(signer)]
     pub authority: Signer<'info>,
     #[account(mut)]
