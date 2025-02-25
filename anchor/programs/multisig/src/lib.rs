@@ -6,21 +6,17 @@ declare_id!("Fg6PaFpoGXkYsidMpWxqSWFEXvUfsicV7opJ2zG9JWxD");
 pub mod multisig {
     use super::*;
 
-    pub fn create_multisig(ctx: Context<CreateMultisig>, seed: String) -> Result<()> {
-        let (pda, _bump) = Pubkey::find_program_address(&[seed.as_bytes()], &id()); // Derive a PDA for the multisig and use it as the authority.
+    pub fn create_multisig(ctx: Context<CreateMultisigContext>, seed: String, signers: Vec<Pubkey>, threshold: u8) -> Result<()> {
+        let (pda, bump) = Pubkey::find_program_address(&[seed.as_bytes()], &id()); // Derive a PDA for the multisig and use it as the authority.
         require!(ctx.accounts.multisig.key() == pda, ErrorCode::InvalidPDA); 
-        Ok(())
-    }
-
-    /// Initialize a multisig account with signers and threshold
-    pub fn initialize(ctx: Context<Initialize>, signers: Vec<Pubkey>, threshold: u8) -> Result<()> {
-        require!(ctx.accounts.multisig.owner == id(), ErrorCode::InvalidOwner);
-        require!(signers.len() > 0 && (threshold as usize) <= signers.len(), ErrorCode::InvalidThreshold);
 
         let multisig = &mut ctx.accounts.multisig;
+
+        require!(signers.len() > 0 && (threshold as usize) <= signers.len(), ErrorCode::InvalidThreshold);
+
         multisig.signers = signers;
         multisig.threshold = threshold;
-        multisig.owner = *ctx.accounts.owner.key;
+        multisig.bump = bump; // Store for PDA signing later
 
         Ok(())
     }
@@ -78,17 +74,17 @@ pub mod multisig {
 }
 
 #[derive(Accounts)]
-pub struct CreateMultisig<'info> {
-    #[account(mut, seeds = [b"multisig"], bump)]
-    pub multisig: Account<'info, Multisig>,
-}
-
-#[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct CreateMultisigContext<'info> {
     #[account(mut)]
-    pub owner: Signer<'info>,
-    
-    #[account(init, payer = owner, space = 8 + Multisig::INIT_SPACE)]
+    pub creator: Signer<'info>,
+
+    #[account(
+        init,
+        payer = creator,
+        space = 8 + Multisig::INIT_SPACE,
+        seeds = [b"multisig"],
+        bump
+    )]
     pub multisig: Account<'info, Multisig>,
     
     pub system_program: Program<'info, System>,
@@ -130,10 +126,10 @@ pub struct ExecuteTransaction<'info> {
 #[account]
 #[derive(InitSpace)]
 pub struct Multisig {
-    #[max_len(7)] // Maximum of 7 signers
+    #[max_len(10)] // Maximum of 10 signers
     pub signers: Vec<Pubkey>,
     pub threshold: u8,
-    pub owner: Pubkey,
+    pub bump: u8,
 }
 
 #[account]
