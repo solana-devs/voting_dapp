@@ -56,7 +56,8 @@ pub mod multisig {
         let tx = &ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
 
-        require!(ctx.accounts.authority.is_signer, ErrorCode::Unauthorized); // Ensure sender is a valid signer. Prevents replay attacks where a transaction is executed by an unauthorized caller.
+        require!(multisig.signers.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
+        require!(!tx.executed, ErrorCode::AlreadyExecuted);
         require!(tx.approvals.len() as u8 >= multisig.threshold, ErrorCode::NotEnoughApprovals);
 
         // Execute the transaction by calling the target program
@@ -69,6 +70,7 @@ pub mod multisig {
             &[],
         )?;
 
+        tx.executed = true;
         Ok(())
     }
 }
