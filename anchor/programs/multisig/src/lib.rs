@@ -22,12 +22,16 @@ pub mod multisig {
     }
 
     /// Propose a new transaction
-    pub fn propose_transaction(ctx: Context<ProposeTransaction>, target: Pubkey, data: Vec<u8>) -> Result<()> {
+    pub fn propose_transaction(ctx: Context<ProposeTransactionContext>, target: Pubkey, data: Vec<u8>) -> Result<()> {
+        let multisig = &ctx.accounts.multisig;
+        require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized); //Limits proposals to multisig signers, reducing spam and malicious proposals.
+        
         let tx = &mut ctx.accounts.transaction;
-        tx.multisig = ctx.accounts.multisig.key();
+        tx.multisig = multisig.key();
         tx.target = target;
         tx.data = data;
         tx.approvals = vec![];
+        tx.executed = false;
 
         Ok(())
     }
@@ -52,8 +56,8 @@ pub mod multisig {
     }
 
     /// Execute transaction if threshold is met
-    pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
-        let tx = &ctx.accounts.transaction;
+    pub fn execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Result<()> {
+        let tx = &mut ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
 
         require!(multisig.signers.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
@@ -64,7 +68,7 @@ pub mod multisig {
         anchor_lang::solana_program::program::invoke(
             &anchor_lang::solana_program::instruction::Instruction {
                 program_id: tx.target,
-                accounts: vec![], 
+                accounts: vec![/* Add metas */], 
                 data: tx.data.clone(),
             },
             &[],
@@ -93,7 +97,7 @@ pub struct CreateMultisigContext<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ProposeTransaction<'info> {
+pub struct ProposeTransactionContext<'info> {
     #[account(mut)]
     pub proposer: Signer<'info>,
     #[account(mut)]
@@ -116,7 +120,7 @@ pub struct ApproveTransaction<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ExecuteTransaction<'info> {
+pub struct ExecuteTransactionContext<'info> {
     #[account(signer)]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -163,3 +167,5 @@ pub enum ErrorCode {
     #[msg("Invalid owner")]
     InvalidOwner,
 }
+
+
