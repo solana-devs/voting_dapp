@@ -7,22 +7,20 @@ pub mod multisig {
     use super::*;
 
     pub fn create_multisig(ctx: Context<CreateMultisigContext>, seed: String, signers: Vec<Pubkey>, threshold: u8) -> Result<()> {
-        let (pda, bump) = Pubkey::find_program_address(&[seed.as_bytes()], &id()); // Derive a PDA for the multisig and use it as the authority.
-        require!(ctx.accounts.multisig.key() == pda, ErrorCode::InvalidPDA); 
-
         let multisig = &mut ctx.accounts.multisig;
-
+        let (pda, bump) = Pubkey::find_program_address(&[seed.as_bytes()], &id()); // Derive a PDA for the multisig and use it as the authority.
+        require!(multisig.key() == pda, ErrorCode::InvalidPDA); // ensures the account matches the derived address and Anchor will still initialize it correctly with the provided bump internally.
         require!(signers.len() > 0 && (threshold as usize) <= signers.len(), ErrorCode::InvalidThreshold);
 
         multisig.signers = signers;
         multisig.threshold = threshold;
-        multisig.bump = bump; // Store for PDA signing later
+        multisig.bump = bump; 
 
         Ok(())
     }
 
     /// Propose a new transaction
-    pub fn propose_transaction(ctx: Context<ProposeTransactionContext>, target: Pubkey, data: Vec<u8>) -> Result<()> {
+    pub fn propose_transaction(ctx: Context<ProposeTransactionContext>, target: Pubkey, data: Vec<u8>, nonce: u64) -> Result<()> {
         let multisig = &ctx.accounts.multisig;
         require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized); //Limits proposals to multisig signers, reducing spam and malicious proposals.
         
@@ -32,12 +30,13 @@ pub mod multisig {
         tx.data = data;
         tx.approvals = vec![];
         tx.executed = false;
+        tx.nonce = nonce;
 
         Ok(())
     }
 
     /// Approve a transaction
-    pub fn approve_transaction(ctx: Context<ApproveTransaction>) -> Result<()> {
+    pub fn approve_transaction(ctx: Context<ApproveTransactionContext>) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
         
@@ -58,11 +57,14 @@ pub mod multisig {
     /// Execute transaction if threshold is met
     pub fn execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
-        let multisig = &ctx.accounts.multisig;
+        let multisig = &mut ctx.accounts.multisig;
 
         require!(multisig.signers.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
         require!(!tx.executed, ErrorCode::AlreadyExecuted);
         require!(tx.approvals.len() as u8 >= multisig.threshold, ErrorCode::NotEnoughApprovals);
+        require!(tx.nonce == multisig.nonce, ErrorCode::InvalidNonce);
+        multisig.nonce += 1; 
+        tx.executed = true; // Nonce and state updates before invoke ensure integrity—external failures won’t mess up replay protection.
 
         // Execute the transaction by calling the target program
         anchor_lang::solana_program::program::invoke(
@@ -74,7 +76,6 @@ pub mod multisig {
             &[],
         )?;
 
-        tx.executed = true;
         Ok(())
     }
 }
@@ -88,8 +89,6 @@ pub struct CreateMultisigContext<'info> {
         init,
         payer = creator,
         space = 8 + Multisig::INIT_SPACE,
-        seeds = [b"multisig"],
-        bump
     )]
     pub multisig: Account<'info, Multisig>,
     
@@ -109,7 +108,7 @@ pub struct ProposeTransactionContext<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ApproveTransaction<'info> {
+pub struct ApproveTransactionContext<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(mut)]
@@ -136,6 +135,7 @@ pub struct Multisig {
     pub signers: Vec<Pubkey>,
     pub threshold: u8,
     pub bump: u8,
+    pub nonce: u64, 
 }
 
 #[account]
@@ -146,8 +146,9 @@ pub struct Transaction {
     pub target: Pubkey, //This is the destination address where the transaction will be sent. It specifies which program (smart contract) will execute the transaction once approved.
     #[max_len(512)] // Maximum of 512 bytes for transaction data
     pub data: Vec<u8>, //This is the data that will be sent to the target program. It is the actual transaction data that will be executed
-    #[max_len(7)]
+    #[max_len(10)]
     pub approvals: Vec<Pubkey>,
+    pub nonce: u64, // replay attack protection
 }
 
 #[error_code]
@@ -166,6 +167,8 @@ pub enum ErrorCode {
     NotEnoughApprovals,
     #[msg("Invalid owner")]
     InvalidOwner,
+    #[msg("Invalid nonce")]
+    InvalidNonce,
 }
 
 
