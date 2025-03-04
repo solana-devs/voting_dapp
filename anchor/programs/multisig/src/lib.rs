@@ -8,7 +8,7 @@ pub mod multisig_escrow {
     use super::*;
 
     /// Initialize multisig and escrow with admin and signers
-    pub fn initialize(ctx: Context<Initialize>, signers: Vec<Pubkey>, threshold: u8, initial_balance: u64) -> Result<()> {
+    pub fn initialize(ctx: Context<InitializeContext>, signers: Vec<Pubkey>, threshold: u8, initial_balance: u64) -> Result<()> {
         let multisig = &mut ctx.accounts.multisig;
         require!(signers.len() > 0 && threshold as usize <= signers.len(), ErrorCode::InvalidThreshold);
         
@@ -30,7 +30,13 @@ pub mod multisig_escrow {
     }
 
     /// Propose a transfer transaction
-    pub fn propose_transaction(ctx: Context<ProposeTransaction>, target: Pubkey, amount: u64, nonce: u64) -> Result<()> {
+    pub fn propose_transaction(
+        ctx: Context<ProposeTransactionContext>, 
+        target: Pubkey, 
+        amount: u64, 
+        nonce: u64, 
+        is_auto_approve: bool,
+    ) -> Result<()> {
         let multisig = &ctx.accounts.multisig;
         require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
 
@@ -38,16 +44,24 @@ pub mod multisig_escrow {
         tx.multisig = multisig.key();
         tx.target = target;
         tx.amount = amount;
-        tx.approvals = vec![*ctx.accounts.proposer.key]; // Auto-approve
+        tx.approvals = if is_auto_approve {
+            vec![*ctx.accounts.proposer.key] // Auto-approve if true
+        } else {
+            vec![] // Empty if false—proposer must approve separately
+        };
         tx.executed = false;
         tx.nonce = nonce;
         tx.transaction_type = TransactionType::Transfer;
 
+        // emit!(TransactionEvent {
+        //     tx_key: tx.key(),
+        //     action: "transfer_proposed".to_string(),
+        // });
         Ok(())
     }
 
     /// Propose a threshold change
-    pub fn propose_threshold_change(ctx: Context<ProposeThresholdChange>, new_threshold: u8, nonce: u64) -> Result<()> {
+    pub fn propose_threshold_change(ctx: Context<ProposeThresholdChangeContext>, new_threshold: u8, nonce: u64) -> Result<()> {
         let multisig = &ctx.accounts.multisig;
         require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
         require!(new_threshold as usize <= multisig.signers.len(), ErrorCode::InvalidThreshold);
@@ -59,11 +73,15 @@ pub mod multisig_escrow {
         tx.nonce = nonce;
         tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
 
+        // emit!(TransactionEvent {
+        //     tx_key: tx.key(),
+        //     action: "threshold_change_proposed".to_string(),
+        // });
         Ok(())
     }
 
     /// Admin or signer approves a transaction
-    pub fn approve_transaction(ctx: Context<ApproveTransaction>) -> Result<()> {
+    pub fn approve_transaction(ctx: Context<ApproveTransactionContext>) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
         let signer_key = ctx.accounts.signer.key();
@@ -80,7 +98,7 @@ pub mod multisig_escrow {
     }
 
     /// Admin deletes an approval
-    pub fn delete_approval(ctx: Context<DeleteApproval>, signer_to_remove: Pubkey) -> Result<()> {
+    pub fn delete_approval(ctx: Context<DeleteApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
         let multisig = &ctx.accounts.multisig;
 
@@ -94,7 +112,7 @@ pub mod multisig_escrow {
     }
 
     /// Execute a transaction if threshold met
-    pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
+    pub fn execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
         let multisig = &mut ctx.accounts.multisig;
     
@@ -124,13 +142,16 @@ pub mod multisig_escrow {
         }
     
         tx.executed = true;
-      
+        // emit!(TransactionEvent {
+        //     tx_key: *tx.key,
+        //     action: "executed".to_string(),
+        // });
         Ok(())
     }
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct InitializeContext<'info> {
     #[account(mut, signer)]
     pub admin: Signer<'info>,
     #[account(
@@ -151,7 +172,7 @@ pub struct Initialize<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ProposeTransaction<'info> {
+pub struct ProposeTransactionContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
     #[account(mut)]
@@ -162,7 +183,7 @@ pub struct ProposeTransaction<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ProposeThresholdChange<'info> {
+pub struct ProposeThresholdChangeContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
     #[account(mut)]
@@ -173,7 +194,7 @@ pub struct ProposeThresholdChange<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ApproveTransaction<'info> {
+pub struct ApproveTransactionContext<'info> {
     #[account(mut, signer)]
     pub signer: Signer<'info>,
     #[account(mut)]
@@ -183,7 +204,7 @@ pub struct ApproveTransaction<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DeleteApproval<'info> {
+pub struct DeleteApprovalContext<'info> {
     #[account(mut, signer)]
     pub admin: Signer<'info>,
     #[account(mut)]
@@ -193,7 +214,7 @@ pub struct DeleteApproval<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ExecuteTransaction<'info> {
+pub struct ExecuteTransactionContext<'info> {
     #[account(signer)]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -244,6 +265,12 @@ pub enum TransactionType {
     Transfer,
     ThresholdChange(u8),
 }
+
+// #[event]
+// pub struct TransactionEvent {
+//     pub tx_key: Pubkey,
+//     pub action: String,
+// }
 
 #[error_code]
 pub enum ErrorCode {
