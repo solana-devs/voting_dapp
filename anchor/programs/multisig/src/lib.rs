@@ -53,10 +53,10 @@ pub mod multisig_escrow {
         tx.nonce = nonce;
         tx.transaction_type = TransactionType::Transfer;
 
-        // emit!(TransactionEvent {
-        //     tx_key: tx.key(),
-        //     action: "transfer_proposed".to_string(),
-        // });
+        emit!(TransactionEvent {
+            tx_key: tx.key(),
+            action: "transfer_proposed".to_string(),
+        });
         Ok(())
     }
 
@@ -73,10 +73,10 @@ pub mod multisig_escrow {
         tx.nonce = nonce;
         tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
 
-        // emit!(TransactionEvent {
-        //     tx_key: tx.key(),
-        //     action: "threshold_change_proposed".to_string(),
-        // });
+        emit!(TransactionEvent {
+            tx_key: tx.key(),
+            action: "threshold_change_proposed".to_string(),
+        });
         Ok(())
     }
 
@@ -142,10 +142,10 @@ pub mod multisig_escrow {
         }
     
         tx.executed = true;
-        // emit!(TransactionEvent {
-        //     tx_key: *tx.key,
-        //     action: "executed".to_string(),
-        // });
+        emit!(TransactionEvent {
+            tx_key: tx.key(),
+            action: "executed".to_string(),
+        });
         Ok(())
     }
 }
@@ -266,11 +266,11 @@ pub enum TransactionType {
     ThresholdChange(u8),
 }
 
-// #[event]
-// pub struct TransactionEvent {
-//     pub tx_key: Pubkey,
-//     pub action: String,
-// }
+#[event]
+pub struct TransactionEvent {
+    pub tx_key: Pubkey,
+    pub action: String,
+}
 
 #[error_code]
 pub enum ErrorCode {
