@@ -11,7 +11,7 @@ pub struct Transaction {
     pub approvals: Vec<Pubkey>,
     pub executed: bool,
     pub nonce: u64,
-    pub is_threshold_change: bool,
-    pub new_threshold: u8,
+    // pub is_threshold_change: bool,
+    // pub new_threshold: u8,
     pub transaction_type: TransactionType,
 }
