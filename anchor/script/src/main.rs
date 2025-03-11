@@ -1,8 +1,32 @@
-use anchor_lang::prelude::*;
-use anchor_client::{Client, Cluster};
-use multisig::{self, InitializeContext};
-use solana_sdk::{pubkey::Pubkey, signature::Keypair};
+// use anchor_lang::prelude::*;
+// use anchor_client::{Client, Cluster};
+// use multisig::{self, InitializeContext};
+// use solana_sdk::{pubkey::Pubkey, signature::Keypair};
+// use std::rc::Rc;
+// use anchor_client::solana_sdk
+
+
 use std::rc::Rc;
+use std::str::FromStr;
+
+use anchor_client::solana_client::rpc_client::RpcClient;
+use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
+use anchor_client::solana_sdk::commitment_config::CommitmentConfig;
+use anchor_client::solana_sdk::pubkey::Pubkey;
+use anchor_client::solana_sdk::signature::{Keypair, Signer};
+use anchor_client::{Client, Cluster};
+use anchor_client::solana_sdk::transaction::Transaction;
+use anchor_lang::solana_program;
+use anyhow::Result;
+use bs58;
+use dotenv::dotenv;
+
+use spl_associated_token_account::get_associated_token_address;
+// use multisig::accounts::InitializeContext;
+use multisig::instructions::initialize;
+use multisig::instructions::initialize::InitializeContext;
+use multisig::program::Multisig;
+
 
 fn main() -> Result<()> {
     dotenv::dotenv().ok();
@@ -22,28 +46,28 @@ fn main() -> Result<()> {
     );
     let program = client.program(program_id)?;
 
-    let multisig = Keypair::new();
-    let escrow = Keypair::new();
     let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id);
+    let (multisig_pda, _) = Pubkey::find_program_address(&[], &program_id);
+
     let signers = vec![admin.pubkey()]; // Example signer list
+
+    let some_pub_key = Pubkey::from_str(&"").unwrap();
 
     let tx = program
         .request()
-        .accounts(multisig::InitializeContext {
+        .accounts(multisig::accounts::InitializeContext {
             admin: admin.pubkey(),
-            multisig: multisig.pubkey(),
+            multisig: multisig_pda,
             escrow: escrow_pda,
             system_program: solana_program::system_program::ID,
         })
-        .args(multisig::Initialize {
+        .args(multisig::instruction::Initialize {
             signers,
             threshold: 1,
             initial_balance: 100_000_000, // 0.1 SOL
         })
         .payer(admin.clone())
         .signer(&*admin)
-        .signer(&multisig)
-        .signer(&escrow)
         .send_with_spinner_and_config(RpcSendTransactionConfig {
             skip_preflight: true,
             ..Default::default()
