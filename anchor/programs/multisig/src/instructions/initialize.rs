@@ -26,7 +26,7 @@ pub fn handle_initialize(ctx: Context<InitializeContext>, signers: Vec<Pubkey>, 
 
 #[derive(Accounts)]
 pub struct InitializeContext<'info> {
-    #[account(mut, signer)]
+    #[account(mut)]
     pub admin: Signer<'info>,
     #[account(
         init,
