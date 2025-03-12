@@ -1,31 +1,27 @@
-// use anchor_lang::prelude::*;
-// use anchor_client::{Client, Cluster};
-// use multisig::{self, InitializeContext};
-// use solana_sdk::{pubkey::Pubkey, signature::Keypair};
-// use std::rc::Rc;
-// use anchor_client::solana_sdk
+// an RPC-based integration test that successfully sets up the multisig and escrow on a live Solana cluster
+// and proposes a transaction to transfer 0.02 SOL to the admin's address.
 
 
 use std::rc::Rc;
 use std::str::FromStr;
 
-use anchor_client::solana_client::rpc_client::RpcClient;
+// use anchor_client::solana_client::rpc_client::RpcClient;
 use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
 use anchor_client::solana_sdk::commitment_config::CommitmentConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::solana_sdk::signature::{Keypair, Signer};
 use anchor_client::{Client, Cluster};
-use anchor_client::solana_sdk::transaction::Transaction;
+// use anchor_client::solana_sdk::transaction::Transaction;
 use anchor_lang::solana_program;
 use anyhow::Result;
 use bs58;
 use dotenv::dotenv;
 
-use spl_associated_token_account::get_associated_token_address;
+// use spl_associated_token_account::get_associated_token_address;
 // use multisig::accounts::InitializeContext;
-use multisig::instructions::initialize;
-use multisig::instructions::initialize::InitializeContext;
-use multisig::program::Multisig;
+// use multisig::instructions::initialize;
+// use multisig::instructions::initialize::InitializeContext;
+// use multisig::program::Multisig;
 
 
 fn main() -> Result<()> {
@@ -51,7 +47,7 @@ fn main() -> Result<()> {
 
     let signers = vec![admin.pubkey()]; // Example signer list
 
-    let some_pub_key = Pubkey::from_str(&"").unwrap();
+    // let some_pub_key = Pubkey::from_str(&"").unwrap();
 
     let tx = program
         .request()
@@ -74,5 +70,30 @@ fn main() -> Result<()> {
         })?;
 
     println!("Initialized multisig - Signature: {}", tx);
+
+    let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
+
+        let tx = program
+        .request()
+        .accounts(multisig::accounts::ProposeTransactionContext {
+            proposer: admin.pubkey(),
+            multisig: multisig_pda,
+            transaction: tx_pda,
+            system_program: solana_program::system_program::ID,
+        })
+        .args(multisig::instruction::ProposeTransaction {
+            target: admin.pubkey(),
+            amount: 20_000_000, // 0.02 SOL
+            nonce: 0,
+            is_auto_approve: false,
+        })
+        .payer(admin.clone())
+        .signer(&*admin)
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            skip_preflight: true,
+            ..Default::default()
+        })?;
+
+    println!("Propose a multisig tx - Signature: {}", tx);
     Ok(())
 }

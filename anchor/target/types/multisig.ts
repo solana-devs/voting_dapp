@@ -1,228 +1,258 @@
-/**
- * Program IDL in camelCase format in order to be used in JS/TS.
- *
- * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/multisig.json`.
- */
 export type Multisig = {
-  "address": "Fg6PaFpoGXkYsidMpWxqSWFEXvUfsicV7opJ2zG9JWxD",
-  "metadata": {
-    "name": "multisig",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
+  "version": "0.1.0",
+  "name": "multisig",
   "instructions": [
-    {
-      "name": "approveTransaction",
-      "docs": [
-        "Approve a transaction"
-      ],
-      "discriminator": [
-        224,
-        39,
-        88,
-        181,
-        36,
-        59,
-        155,
-        122
-      ],
-      "accounts": [
-        {
-          "name": "transaction",
-          "writable": true
-        },
-        {
-          "name": "multisig",
-          "writable": true
-        },
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "executeTransaction",
-      "docs": [
-        "Execute transaction if threshold is met"
-      ],
-      "discriminator": [
-        231,
-        173,
-        49,
-        91,
-        235,
-        24,
-        68,
-        19
-      ],
-      "accounts": [
-        {
-          "name": "transaction",
-          "writable": true
-        },
-        {
-          "name": "multisig",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
     {
       "name": "initialize",
       "docs": [
-        "Initialize a multisig account with signers and threshold"
-      ],
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
+        "Initialize multisig and escrow with admin and signers"
       ],
       "accounts": [
         {
-          "name": "multisig",
-          "writable": true,
-          "signer": true
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
         },
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
           "name": "signers",
           "type": {
-            "vec": "pubkey"
+            "vec": "publicKey"
           }
         },
         {
           "name": "threshold",
           "type": "u8"
+        },
+        {
+          "name": "initialBalance",
+          "type": "u64"
         }
       ]
     },
     {
       "name": "proposeTransaction",
       "docs": [
-        "Propose a new transaction"
-      ],
-      "discriminator": [
-        35,
-        204,
-        169,
-        240,
-        74,
-        70,
-        31,
-        236
+        "Propose a transfer transaction"
       ],
       "accounts": [
         {
+          "name": "proposer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
           "name": "multisig",
-          "writable": true
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "transaction",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "proposer",
-          "writable": true,
-          "signer": true
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
           "name": "target",
-          "type": "pubkey"
+          "type": "publicKey"
         },
         {
-          "name": "data",
-          "type": "bytes"
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        },
+        {
+          "name": "isAutoApprove",
+          "type": "bool"
         }
       ]
+    },
+    {
+      "name": "proposeThresholdChange",
+      "docs": [
+        "Propose a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "proposer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "newThreshold",
+          "type": "u8"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "approveTransaction",
+      "docs": [
+        "Admin or signer approves a transaction"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deleteApproval",
+      "docs": [
+        "Admin deletes an approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "executeTransaction",
+      "docs": [
+        "Execute a transaction if threshold met"
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "target",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
     {
-      "name": "multisig",
-      "discriminator": [
-        224,
-        116,
-        121,
-        186,
-        68,
-        161,
-        79,
-        236
-      ]
+      "name": "escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "balance",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     },
-    {
-      "name": "transaction",
-      "discriminator": [
-        11,
-        24,
-        174,
-        129,
-        203,
-        117,
-        242,
-        23
-      ]
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "invalidThreshold",
-      "msg": "Invalid threshold value"
-    },
-    {
-      "code": 6001,
-      "name": "unauthorized",
-      "msg": "Signer not authorized"
-    },
-    {
-      "code": 6002,
-      "name": "alreadyApproved",
-      "msg": "Transaction already approved by this signer"
-    },
-    {
-      "code": 6003,
-      "name": "notEnoughApprovals",
-      "msg": "Not enough approvals to execute"
-    }
-  ],
-  "types": [
     {
       "name": "multisig",
       "type": {
         "kind": "struct",
         "fields": [
           {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
             "name": "signers",
             "type": {
-              "vec": "pubkey"
+              "vec": "publicKey"
             }
           },
           {
@@ -230,8 +260,8 @@ export type Multisig = {
             "type": "u8"
           },
           {
-            "name": "owner",
-            "type": "pubkey"
+            "name": "nonce",
+            "type": "u64"
           }
         ]
       }
@@ -243,24 +273,495 @@ export type Multisig = {
         "fields": [
           {
             "name": "multisig",
-            "type": "pubkey"
+            "type": "publicKey"
           },
           {
             "name": "target",
-            "type": "pubkey"
+            "type": "publicKey"
           },
           {
-            "name": "data",
-            "type": "bytes"
+            "name": "amount",
+            "type": "u64"
           },
           {
             "name": "approvals",
             "type": {
-              "vec": "pubkey"
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "executed",
+            "type": "bool"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "transactionType",
+            "type": {
+              "defined": "TransactionType"
             }
           }
         ]
       }
+    }
+  ],
+  "types": [
+    {
+      "name": "TransactionType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Transfer"
+          },
+          {
+            "name": "ThresholdChange",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "TransactionEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidThreshold",
+      "msg": "Invalid threshold value"
+    },
+    {
+      "code": 6002,
+      "name": "AlreadyExecuted",
+      "msg": "Transaction already executed"
+    },
+    {
+      "code": 6003,
+      "name": "NotEnoughApprovals",
+      "msg": "Not enough approvals"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidNonce",
+      "msg": "Invalid nonce"
+    },
+    {
+      "code": 6005,
+      "name": "AlreadyApproved",
+      "msg": "Approval already exists"
+    },
+    {
+      "code": 6006,
+      "name": "ApprovalNotFound",
+      "msg": "Approval not found"
+    }
+  ]
+};
+
+export const IDL: Multisig = {
+  "version": "0.1.0",
+  "name": "multisig",
+  "instructions": [
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize multisig and escrow with admin and signers"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signers",
+          "type": {
+            "vec": "publicKey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        },
+        {
+          "name": "initialBalance",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "proposeTransaction",
+      "docs": [
+        "Propose a transfer transaction"
+      ],
+      "accounts": [
+        {
+          "name": "proposer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "target",
+          "type": "publicKey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        },
+        {
+          "name": "isAutoApprove",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "proposeThresholdChange",
+      "docs": [
+        "Propose a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "proposer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "newThreshold",
+          "type": "u8"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "approveTransaction",
+      "docs": [
+        "Admin or signer approves a transaction"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deleteApproval",
+      "docs": [
+        "Admin deletes an approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "executeTransaction",
+      "docs": [
+        "Execute a transaction if threshold met"
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "target",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "balance",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "multisig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "signers",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "transaction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "multisig",
+            "type": "publicKey"
+          },
+          {
+            "name": "target",
+            "type": "publicKey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "approvals",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "executed",
+            "type": "bool"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "transactionType",
+            "type": {
+              "defined": "TransactionType"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "TransactionType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Transfer"
+          },
+          {
+            "name": "ThresholdChange",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "TransactionEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidThreshold",
+      "msg": "Invalid threshold value"
+    },
+    {
+      "code": 6002,
+      "name": "AlreadyExecuted",
+      "msg": "Transaction already executed"
+    },
+    {
+      "code": 6003,
+      "name": "NotEnoughApprovals",
+      "msg": "Not enough approvals"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidNonce",
+      "msg": "Invalid nonce"
+    },
+    {
+      "code": 6005,
+      "name": "AlreadyApproved",
+      "msg": "Approval already exists"
+    },
+    {
+      "code": 6006,
+      "name": "ApprovalNotFound",
+      "msg": "Approval not found"
     }
   ]
 };
