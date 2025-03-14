@@ -9,7 +9,7 @@ pub fn handle_approve_transaction(ctx: Context<ApproveTransactionContext>) -> Re
 
     require!(!tx.executed, ErrorCode::AlreadyExecuted);
     require!(
-        multisig.signers.contains(&signer_key) || signer_key == multisig.admin,
+        multisig.approvals.contains(&signer_key) || signer_key == multisig.admin,
         ErrorCode::Unauthorized
     );
     require!(!tx.approvals.contains(&signer_key), ErrorCode::AlreadyApproved);

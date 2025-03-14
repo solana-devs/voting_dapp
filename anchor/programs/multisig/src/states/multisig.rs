@@ -5,7 +5,8 @@ use anchor_lang::prelude::*;
 pub struct Multisig {
     pub admin: Pubkey,
     #[max_len(10)]
-    pub signers: Vec<Pubkey>,
+    pub approvals: Vec<Pubkey>,
     pub threshold: u8,
     pub nonce: u64,
+    pub bump: u8,
 }

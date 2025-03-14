@@ -14,9 +14,9 @@
           "isSigner": true
         },
         {
-          "name": "multisig",
+          "name": "multisigObject",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "escrow",
@@ -31,7 +31,7 @@
       ],
       "args": [
         {
-          "name": "signers",
+          "name": "approvalList",
           "type": {
             "vec": "publicKey"
           }
@@ -250,7 +250,7 @@
             "type": "publicKey"
           },
           {
-            "name": "signers",
+            "name": "approvals",
             "type": {
               "vec": "publicKey"
             }
@@ -379,5 +379,8 @@
       "name": "ApprovalNotFound",
       "msg": "Approval not found"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "3vupviezrkLia2hn4AHBaywqSgfRbgkAMt1ZCS3pZtiT"
+  }
 }

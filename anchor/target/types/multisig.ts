@@ -14,9 +14,9 @@ export type Multisig = {
           "isSigner": true
         },
         {
-          "name": "multisig",
+          "name": "multisigObject",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "escrow",
@@ -31,7 +31,7 @@ export type Multisig = {
       ],
       "args": [
         {
-          "name": "signers",
+          "name": "approvalList",
           "type": {
             "vec": "publicKey"
           }
@@ -250,7 +250,7 @@ export type Multisig = {
             "type": "publicKey"
           },
           {
-            "name": "signers",
+            "name": "approvals",
             "type": {
               "vec": "publicKey"
             }
@@ -398,9 +398,9 @@ export const IDL: Multisig = {
           "isSigner": true
         },
         {
-          "name": "multisig",
+          "name": "multisigObject",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "escrow",
@@ -415,7 +415,7 @@ export const IDL: Multisig = {
       ],
       "args": [
         {
-          "name": "signers",
+          "name": "approvalList",
           "type": {
             "vec": "publicKey"
           }
@@ -634,7 +634,7 @@ export const IDL: Multisig = {
             "type": "publicKey"
           },
           {
-            "name": "signers",
+            "name": "approvals",
             "type": {
               "vec": "publicKey"
             }
