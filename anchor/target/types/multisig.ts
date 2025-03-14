@@ -14,7 +14,7 @@ export type Multisig = {
           "isSigner": true
         },
         {
-          "name": "multisigObject",
+          "name": "multisig",
           "isMut": true,
           "isSigner": false
         },
@@ -262,6 +262,10 @@ export type Multisig = {
           {
             "name": "nonce",
             "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -398,7 +402,7 @@ export const IDL: Multisig = {
           "isSigner": true
         },
         {
-          "name": "multisigObject",
+          "name": "multisig",
           "isMut": true,
           "isSigner": false
         },
@@ -646,6 +650,10 @@ export const IDL: Multisig = {
           {
             "name": "nonce",
             "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

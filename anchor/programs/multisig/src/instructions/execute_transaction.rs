@@ -47,9 +47,9 @@ pub struct ExecuteTransactionContext<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
-    #[account(mut, seeds = [b"escrow"], bump = multisig.bump)]
+    #[account(mut, seeds = [b"escrow"], bump = escrow.bump)]
     pub escrow: Account<'info, Escrow>,
     #[account(mut)]
     pub target: AccountInfo<'info>,

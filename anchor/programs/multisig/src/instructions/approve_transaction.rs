@@ -24,6 +24,6 @@ pub struct ApproveTransactionContext<'info> {
     pub signer: Signer<'info>,
     #[account(mut)]
     pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
 }

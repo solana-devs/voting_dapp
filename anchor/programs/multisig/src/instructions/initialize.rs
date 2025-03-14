@@ -4,7 +4,7 @@ use crate::errors::ErrorCode;
 use crate::states::*;
 
 pub fn handle_initialize(ctx: Context<InitializeContext>, approval_list: Vec<Pubkey>, threshold: u8, initial_balance: u64) -> Result<()> {
-    let multisig = &mut ctx.accounts.multisig_object;
+    let multisig = &mut ctx.accounts.multisig;
     require!(approval_list.len() > 0 && threshold as usize <= approval_list.len(), ErrorCode::InvalidThreshold);
     
     multisig.admin = *ctx.accounts.admin.key;
@@ -35,7 +35,7 @@ pub struct InitializeContext<'info> {
         seeds = [b"multisig"],
         bump,
     )]
-    pub multisig_object: Account<'info, Multisig>,
+    pub multisig: Account<'info, Multisig>,
     #[account(
         init,
         payer = admin,

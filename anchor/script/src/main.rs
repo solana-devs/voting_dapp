@@ -47,7 +47,7 @@ fn main() -> Result<()> {
     );
     let program = client.program(program_id)?;
 
-    let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id);
+    let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id); //bump??
     let (multisig_pda, _) = Pubkey::find_program_address(&[b"multisig"], &program_id);
 
     let approval_list = vec![admin.pubkey()]; // Example signer list
@@ -58,7 +58,7 @@ fn main() -> Result<()> {
         .request()
         .accounts(multisig::accounts::InitializeContext {
             admin: admin.pubkey(),
-            multisig_object: multisig_pda,
+            multisig: multisig_pda,
             escrow: escrow_pda,
             system_program: solana_program::system_program::ID,
         })
@@ -75,7 +75,7 @@ fn main() -> Result<()> {
         })?;
 
     println!("Initialized multisig - Signature: {}", tx);
-    
+
 
     let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
 

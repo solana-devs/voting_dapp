@@ -14,7 +14,7 @@
           "isSigner": true
         },
         {
-          "name": "multisigObject",
+          "name": "multisig",
           "isMut": true,
           "isSigner": false
         },
@@ -262,6 +262,10 @@
           {
             "name": "nonce",
             "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -381,6 +385,6 @@
     }
   ],
   "metadata": {
-    "address": "3vupviezrkLia2hn4AHBaywqSgfRbgkAMt1ZCS3pZtiT"
+    "address": "CpsdhVwdWHvz89grp3A3p5USupRF3SK449GYEtb2B6Bg"
   }
 }
