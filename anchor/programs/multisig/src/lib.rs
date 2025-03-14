@@ -7,7 +7,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("6VEFARTwWDVyJYmaxAxvGnGWYaRPzVobuvfr92GuFcGT");
+declare_id!("3vupviezrkLia2hn4AHBaywqSgfRbgkAMt1ZCS3pZtiT");
 
 #[program]
 pub mod multisig {
