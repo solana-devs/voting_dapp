@@ -5,8 +5,8 @@ use crate::utils::*;
 
 pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContext>, new_threshold: u8, nonce: u64) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
-    require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
-    require!(new_threshold as usize <= multisig.signers.len(), ErrorCode::InvalidThreshold);
+    require!(multisig.approvals.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
+    require!(new_threshold as usize <= multisig.approvals.len(), ErrorCode::InvalidThreshold);
 
     let tx = &mut ctx.accounts.transaction;
     tx.multisig = multisig.key();
@@ -26,7 +26,7 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
 pub struct ProposeThresholdChangeContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
     #[account(init, payer = proposer, space = 8 + Transaction::INIT_SPACE)]
     pub transaction: Account<'info, Transaction>,

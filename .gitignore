@@ -49,3 +49,5 @@ anchor/node_modules
 anchor/test-ledger
 anchor/.yarn
 test-ledger
+
+anchor/script/.env

@@ -7,15 +7,15 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWxqSWFEXvUfsicV7opJ2zG9JWxD");
+declare_id!("3vupviezrkLia2hn4AHBaywqSgfRbgkAMt1ZCS3pZtiT");
 
 #[program]
 pub mod multisig {
     use super::*;
 
     /// Initialize multisig and escrow with admin and signers
-    pub fn initialize(ctx: Context<InitializeContext>, signers: Vec<Pubkey>, threshold: u8, initial_balance: u64) -> Result<()> {
-        handle_initialize(ctx, signers, threshold, initial_balance)
+    pub fn initialize(ctx: Context<InitializeContext>, approval_list: Vec<Pubkey>, threshold: u8, initial_balance: u64) -> Result<()> {
+        handle_initialize(ctx, approval_list, threshold, initial_balance)
     }
 
     /// Propose a transfer transaction

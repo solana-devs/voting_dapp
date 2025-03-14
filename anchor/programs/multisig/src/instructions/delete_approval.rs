@@ -21,6 +21,6 @@ pub struct DeleteApprovalContext<'info> {
     pub admin: Signer<'info>,
     #[account(mut)]
     pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
 }

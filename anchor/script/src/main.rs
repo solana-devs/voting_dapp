@@ -15,7 +15,7 @@ use anchor_client::{Client, Cluster};
 use anchor_lang::solana_program;
 use anyhow::Result;
 use bs58;
-use dotenv::dotenv;
+// use dotenv::dotenv;
 
 // use spl_associated_token_account::get_associated_token_address;
 // use multisig::accounts::InitializeContext;
@@ -35,6 +35,11 @@ fn main() -> Result<()> {
     let admin = Rc::new(Keypair::from_bytes(&private_key_bytes)?);
     let program_id = Pubkey::from_str(&env_program_id).unwrap();
 
+
+
+    println!("Admin pubkey: {}", admin.pubkey());
+    println!("program_id: {}", program_id);
+
     let client = Client::new_with_options(
         Cluster::from_str(&env_solana_rpc).unwrap(),
         admin.clone(),
@@ -42,10 +47,10 @@ fn main() -> Result<()> {
     );
     let program = client.program(program_id)?;
 
-    let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id);
-    let (multisig_pda, _) = Pubkey::find_program_address(&[], &program_id);
+    let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id); //bump??
+    let (multisig_pda, _) = Pubkey::find_program_address(&[b"multisig"], &program_id);
 
-    let signers = vec![admin.pubkey()]; // Example signer list
+    let approval_list = vec![admin.pubkey()]; // Example signer list
 
     // let some_pub_key = Pubkey::from_str(&"").unwrap();
 
@@ -58,7 +63,7 @@ fn main() -> Result<()> {
             system_program: solana_program::system_program::ID,
         })
         .args(multisig::instruction::Initialize {
-            signers,
+            approval_list,
             threshold: 1,
             initial_balance: 100_000_000, // 0.1 SOL
         })
@@ -70,6 +75,7 @@ fn main() -> Result<()> {
         })?;
 
     println!("Initialized multisig - Signature: {}", tx);
+
 
     let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
 

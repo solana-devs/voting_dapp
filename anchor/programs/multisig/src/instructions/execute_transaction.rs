@@ -8,7 +8,7 @@ pub fn handle_execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Re
     let tx = &mut ctx.accounts.transaction;
     let multisig = &mut ctx.accounts.multisig;
 
-    require!(multisig.signers.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
+    require!(multisig.approvals.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
     require!(!tx.executed, ErrorCode::AlreadyExecuted);
     require!(tx.nonce == multisig.nonce, ErrorCode::InvalidNonce);
     require!(tx.approvals.len() as u8 >= multisig.threshold, ErrorCode::NotEnoughApprovals);
@@ -28,7 +28,7 @@ pub fn handle_execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Re
             transfer(cpi_ctx, tx.amount)?;
         }
         TransactionType::ThresholdChange(new_threshold) => {
-            require!(new_threshold as usize <= multisig.signers.len(), ErrorCode::InvalidThreshold);
+            require!(new_threshold as usize <= multisig.approvals.len(), ErrorCode::InvalidThreshold);
             multisig.threshold = new_threshold;
         }
     }
@@ -47,7 +47,7 @@ pub struct ExecuteTransactionContext<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
     #[account(mut, seeds = [b"escrow"], bump = escrow.bump)]
     pub escrow: Account<'info, Escrow>,

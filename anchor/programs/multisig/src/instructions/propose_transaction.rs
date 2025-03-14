@@ -11,7 +11,7 @@ pub fn handle_propose_transaction(
     is_auto_approve: bool,
 ) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
-    require!(multisig.signers.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
+    require!(multisig.approvals.contains(&ctx.accounts.proposer.key()), ErrorCode::Unauthorized);
 
     let tx = &mut ctx.accounts.transaction;
     tx.multisig = multisig.key();
@@ -37,7 +37,7 @@ pub fn handle_propose_transaction(
 pub struct ProposeTransactionContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,
     #[account(init, payer = proposer, space = 8 + Transaction::INIT_SPACE)]
     pub transaction: Account<'info, Transaction>,
