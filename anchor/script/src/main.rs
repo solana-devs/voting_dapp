@@ -77,14 +77,16 @@ fn main() -> Result<()> {
     println!("Initialized multisig - Signature: {}", tx);
 
 
-    let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
+    // let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
+    let transaction = Keypair::new();
+    println!("Transaction Pubkey: {}", transaction.pubkey());
 
-        let tx = program
+        let propose_tx = program
         .request()
         .accounts(multisig::accounts::ProposeTransactionContext {
             proposer: admin.pubkey(),
             multisig: multisig_pda,
-            transaction: tx_pda,
+            transaction: transaction.pubkey(),
             system_program: solana_program::system_program::ID,
         })
         .args(multisig::instruction::ProposeTransaction {
@@ -95,11 +97,12 @@ fn main() -> Result<()> {
         })
         .payer(admin.clone())
         .signer(&*admin)
+        .signer(&transaction)
         .send_with_spinner_and_config(RpcSendTransactionConfig {
             skip_preflight: true,
             ..Default::default()
         })?;
 
-    println!("Propose a multisig tx - Signature: {}", tx);
+    println!("Propose a multisig tx - Signature: {}", propose_tx);
     Ok(())
 }
