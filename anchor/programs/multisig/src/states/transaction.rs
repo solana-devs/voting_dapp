@@ -14,4 +14,5 @@ pub struct Transaction {
     // pub is_threshold_change: bool,
     // pub new_threshold: u8,
     pub transaction_type: TransactionType,
+    pub bump: u8,
 }

@@ -7,10 +7,12 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("3vupviezrkLia2hn4AHBaywqSgfRbgkAMt1ZCS3pZtiT");
+declare_id!("CZBpveVCdm1FonLNcT7koDnZxpAykq2nKP2hXaYhEfwd");
 
 #[program]
 pub mod multisig {
+    use anchor_lang::solana_program::nonce;
+
     use super::*;
 
     /// Initialize multisig and escrow with admin and signers

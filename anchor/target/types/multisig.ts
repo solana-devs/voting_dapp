@@ -65,7 +65,7 @@ export type Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -306,6 +306,10 @@ export type Multisig = {
             "type": {
               "defined": "TransactionType"
             }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -453,7 +457,7 @@ export const IDL: Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -694,6 +698,10 @@ export const IDL: Multisig = {
             "type": {
               "defined": "TransactionType"
             }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
