@@ -52,8 +52,6 @@ fn main() -> Result<()> {
 
     let approval_list = vec![admin.pubkey()]; // Example signer list
 
-    // let some_pub_key = Pubkey::from_str(&"").unwrap();
-
     let tx = program
         .request()
         .accounts(multisig::accounts::InitializeContext {
@@ -77,7 +75,8 @@ fn main() -> Result<()> {
     println!("Initialized multisig - Signature: {}", tx);
 
 
-    let (tx_pda, _) = Pubkey::find_program_address(&[], &program_id);
+    let (tx_pda, _) = Pubkey::find_program_address(&[b"transaction"], &program_id);
+    // let transaction = Keypair::new();
 
         let tx = program
         .request()
@@ -96,10 +95,11 @@ fn main() -> Result<()> {
         .payer(admin.clone())
         .signer(&*admin)
         .send_with_spinner_and_config(RpcSendTransactionConfig {
-            skip_preflight: true,
+            skip_preflight: true, //"true" hides detailed errors. Turned it off for better logs -> had "RPC response error -32002: Transaction simulation failed: Blockhash not found", so set to true again
+            max_retries: Some(5),
             ..Default::default()
         })?;
-
+        
     println!("Propose a multisig tx - Signature: {}", tx);
     Ok(())
 }
