@@ -10,6 +10,9 @@ pub use propose_threshold_change::*;
 pub mod approve_transaction;
 pub use approve_transaction::*;
 
+pub mod approve_threshold_change;
+pub use approve_threshold_change::*;
+
 pub mod delete_approval;
 pub use delete_approval::*;
 

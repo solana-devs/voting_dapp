@@ -155,6 +155,30 @@ export type Multisig = {
       "args": []
     },
     {
+      "name": "approveThresholdChange",
+      "docs": [
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "deleteApproval",
       "docs": [
         "Admin deletes an approval"
@@ -335,6 +359,28 @@ export type Multisig = {
     }
   ],
   "events": [
+    {
+      "name": "TransactionApprovedEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "signer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "transactionType",
+          "type": {
+            "defined": "TransactionType"
+          },
+          "index": false
+        }
+      ]
+    },
     {
       "name": "TransactionEvent",
       "fields": [
@@ -547,6 +593,30 @@ export const IDL: Multisig = {
       "args": []
     },
     {
+      "name": "approveThresholdChange",
+      "docs": [
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "deleteApproval",
       "docs": [
         "Admin deletes an approval"
@@ -727,6 +797,28 @@ export const IDL: Multisig = {
     }
   ],
   "events": [
+    {
+      "name": "TransactionApprovedEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "signer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "transactionType",
+          "type": {
+            "defined": "TransactionType"
+          },
+          "index": false
+        }
+      ]
+    },
     {
       "name": "TransactionEvent",
       "fields": [

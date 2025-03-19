@@ -10,7 +10,7 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
 
     let tx = &mut ctx.accounts.transaction;
     tx.multisig = multisig.key();
-    tx.approvals = vec![*ctx.accounts.proposer.key]; // Auto-approve
+    tx.approvals = vec![]; // Auto-approve if *ctx.accounts.proposer.key is in vec
     tx.executed = false;
     tx.nonce = nonce;
     tx.transaction_type = TransactionType::ThresholdChange(new_threshold);

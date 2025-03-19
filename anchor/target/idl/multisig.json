@@ -155,6 +155,30 @@
       "args": []
     },
     {
+      "name": "approveThresholdChange",
+      "docs": [
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "deleteApproval",
       "docs": [
         "Admin deletes an approval"
@@ -336,6 +360,28 @@
   ],
   "events": [
     {
+      "name": "TransactionApprovedEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "signer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "transactionType",
+          "type": {
+            "defined": "TransactionType"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
       "name": "TransactionEvent",
       "fields": [
         {
@@ -389,6 +435,6 @@
     }
   ],
   "metadata": {
-    "address": "8VkQEGnqNAGhVWQdZrTjChdfpPvZJujCek9tB8kCWQSJ"
+    "address": "9vejvKmERY2y7DXeT5LCzhSBNEBzRDEVXTgYMLMCz5E9"
   }
 }

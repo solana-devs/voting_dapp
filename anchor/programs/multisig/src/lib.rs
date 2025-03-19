@@ -7,7 +7,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("8VkQEGnqNAGhVWQdZrTjChdfpPvZJujCek9tB8kCWQSJ");
+declare_id!("9vejvKmERY2y7DXeT5LCzhSBNEBzRDEVXTgYMLMCz5E9");
 
 #[program]
 pub mod multisig {
@@ -39,6 +39,11 @@ pub mod multisig {
     /// Admin or signer approves a transaction
     pub fn approve_transaction(ctx: Context<ApproveTransactionContext>) -> Result<()> {
         handle_approve_transaction(ctx)
+    }
+
+    /// Admin or signer approves a threshold change
+    pub fn approve_threshold_change(ctx: Context<ApproveThresholdChangeContext>) -> Result<()> {
+        handle_approve_threshold_change(ctx)
     }
 
     /// Admin deletes an approval

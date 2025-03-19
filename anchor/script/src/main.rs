@@ -90,7 +90,7 @@ fn main() -> Result<()> {
             target: admin.pubkey(),
             amount: 20_000_000, // 0.02 SOL
             nonce: 0,
-            is_auto_approve: false,
+            is_auto_approve: true,
         })
         .payer(admin.clone())
         .signer(&*admin)
@@ -126,5 +126,22 @@ fn main() -> Result<()> {
         
     println!("Propose a threshold change tx - Signature: {}", tx);
 
+
+        let tx = program
+        .request()
+        .accounts(multisig::accounts::ApproveThresholdChangeContext {
+            signer: admin.pubkey(),
+            transaction: threshold_change_tx_pda,
+            multisig: multisig_pda,
+        })
+        .args(multisig::instruction::ApproveThresholdChange {})
+        .payer(admin.clone())
+        .signer(&*admin)
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            skip_preflight: true, 
+            ..Default::default()
+        })?;
+        
+    println!("Approved threshold change - Signature: {}", tx);
     Ok(())
 }
