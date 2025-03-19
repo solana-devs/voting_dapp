@@ -7,7 +7,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("9vejvKmERY2y7DXeT5LCzhSBNEBzRDEVXTgYMLMCz5E9");
+declare_id!("CYxiCkyVH32m2LPwm7jGYwDfk1E5fmTbbVGqs8W7ijHp");
 
 #[program]
 pub mod multisig {
@@ -46,9 +46,14 @@ pub mod multisig {
         handle_approve_threshold_change(ctx)
     }
 
-    /// Admin deletes an approval
-    pub fn delete_approval(ctx: Context<DeleteApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
-        handle_delete_approval(ctx, signer_to_remove)
+    /// Admin deletes tx approval
+    pub fn delete_tx_approval(ctx: Context<DeleteTxApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
+        handle_delete_tx_approval(ctx, signer_to_remove)
+    }
+
+    /// Admin deletes a threshold change approval
+    pub fn delete_threshold_change_approval(ctx: Context<DeleteThresholdChangeApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
+        handle_delete_threshold_change_approval(ctx, signer_to_remove)
     }
 
     /// Execute a transaction if threshold met

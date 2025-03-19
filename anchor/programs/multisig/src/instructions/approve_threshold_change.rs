@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::errors::ErrorCode;
 use crate::states::*;
-use crate::utils::*;
+// use crate::utils::*;
 
 pub fn handle_approve_threshold_change(ctx: Context<ApproveThresholdChangeContext>) -> Result<()> {
     let tx = &mut ctx.accounts.transaction;
@@ -16,12 +16,6 @@ pub fn handle_approve_threshold_change(ctx: Context<ApproveThresholdChangeContex
     require!(!tx.approvals.contains(&signer_key), ErrorCode::AlreadyApproved);
 
     tx.approvals.push(signer_key);
-
-    emit!(TransactionApprovedEvent {
-        tx_key: tx.key(),
-        signer: signer_key,
-        transaction_type: tx.transaction_type.clone(), // Include type
-    });
 
     Ok(())
 }

@@ -25,7 +25,7 @@ pub fn handle_propose_transaction(
     };
     tx.executed = false;
     tx.nonce = nonce;
-    tx.transaction_type = TransactionType::Transfer;
+    // tx.transaction_type = TransactionType::Transfer;
     // tx.bump = ctx.bumps.transaction;
 
     emit!(TransactionEvent {

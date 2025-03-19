@@ -13,7 +13,7 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
     tx.approvals = vec![]; // Auto-approve if *ctx.accounts.proposer.key is in vec
     tx.executed = false;
     tx.nonce = nonce;
-    tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
+    // tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
 
     emit!(TransactionEvent {
         tx_key: tx.key(),

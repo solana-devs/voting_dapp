@@ -143,5 +143,25 @@ fn main() -> Result<()> {
         })?;
         
     println!("Approved threshold change - Signature: {}", tx);
+
+    let tx = program
+        .request()
+        .accounts(multisig::accounts::DeleteThresholdChangeApprovalContext {
+            admin: admin.pubkey(),
+            transaction: threshold_change_tx_pda,
+            multisig: multisig_pda,
+        })
+        .args(multisig::instruction::DeleteThresholdChangeApproval {
+            signer_to_remove: admin.pubkey(),
+        })
+        .payer(admin.clone())
+        .signer(&*admin)
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            skip_preflight: true, 
+            ..Default::default()
+        })?;
+        
+    println!("Removed threshold change signer - Signature: {}", tx);
+
     Ok(())
 }

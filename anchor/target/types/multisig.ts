@@ -179,9 +179,38 @@ export type Multisig = {
       "args": []
     },
     {
-      "name": "deleteApproval",
+      "name": "deleteTxApproval",
       "docs": [
-        "Admin deletes an approval"
+        "Admin deletes tx approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deleteThresholdChangeApproval",
+      "docs": [
+        "Admin deletes a threshold change approval"
       ],
       "accounts": [
         {
@@ -326,10 +355,8 @@ export type Multisig = {
             "type": "u64"
           },
           {
-            "name": "transactionType",
-            "type": {
-              "defined": "TransactionType"
-            }
+            "name": "newThreshold",
+            "type": "u8"
           },
           {
             "name": "bump",
@@ -339,48 +366,7 @@ export type Multisig = {
       }
     }
   ],
-  "types": [
-    {
-      "name": "TransactionType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Transfer"
-          },
-          {
-            "name": "ThresholdChange",
-            "fields": [
-              "u8"
-            ]
-          }
-        ]
-      }
-    }
-  ],
   "events": [
-    {
-      "name": "TransactionApprovedEvent",
-      "fields": [
-        {
-          "name": "txKey",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "signer",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transactionType",
-          "type": {
-            "defined": "TransactionType"
-          },
-          "index": false
-        }
-      ]
-    },
     {
       "name": "TransactionEvent",
       "fields": [
@@ -617,9 +603,38 @@ export const IDL: Multisig = {
       "args": []
     },
     {
-      "name": "deleteApproval",
+      "name": "deleteTxApproval",
       "docs": [
-        "Admin deletes an approval"
+        "Admin deletes tx approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deleteThresholdChangeApproval",
+      "docs": [
+        "Admin deletes a threshold change approval"
       ],
       "accounts": [
         {
@@ -764,10 +779,8 @@ export const IDL: Multisig = {
             "type": "u64"
           },
           {
-            "name": "transactionType",
-            "type": {
-              "defined": "TransactionType"
-            }
+            "name": "newThreshold",
+            "type": "u8"
           },
           {
             "name": "bump",
@@ -777,48 +790,7 @@ export const IDL: Multisig = {
       }
     }
   ],
-  "types": [
-    {
-      "name": "TransactionType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Transfer"
-          },
-          {
-            "name": "ThresholdChange",
-            "fields": [
-              "u8"
-            ]
-          }
-        ]
-      }
-    }
-  ],
   "events": [
-    {
-      "name": "TransactionApprovedEvent",
-      "fields": [
-        {
-          "name": "txKey",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "signer",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transactionType",
-          "type": {
-            "defined": "TransactionType"
-          },
-          "index": false
-        }
-      ]
-    },
     {
       "name": "TransactionEvent",
       "fields": [
