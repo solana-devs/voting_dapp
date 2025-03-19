@@ -26,9 +26,15 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
 pub struct ProposeThresholdChangeContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
-    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
+    #[account(mut, seeds = [b"multisig"], bump)]
     pub multisig: Account<'info, Multisig>,
-    #[account(init, payer = proposer, space = 8 + Transaction::INIT_SPACE)]
+    #[account(
+        init, 
+        payer = proposer, 
+        space = 8 + Transaction::INIT_SPACE, 
+        seeds = [b"threshold change tx"], 
+        bump
+    )]
     pub transaction: Account<'info, Transaction>,
     pub system_program: Program<'info, System>,
 }

@@ -111,7 +111,7 @@ export type Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -503,7 +503,7 @@ export const IDL: Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",

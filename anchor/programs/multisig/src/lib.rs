@@ -7,11 +7,11 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("CZBpveVCdm1FonLNcT7koDnZxpAykq2nKP2hXaYhEfwd");
+declare_id!("8VkQEGnqNAGhVWQdZrTjChdfpPvZJujCek9tB8kCWQSJ");
 
 #[program]
 pub mod multisig {
-    use anchor_lang::solana_program::nonce;
+    // use anchor_lang::solana_program::nonce;
 
     use super::*;
 

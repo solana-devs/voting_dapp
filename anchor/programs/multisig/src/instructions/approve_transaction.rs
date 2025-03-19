@@ -22,7 +22,7 @@ pub fn handle_approve_transaction(ctx: Context<ApproveTransactionContext>) -> Re
 pub struct ApproveTransactionContext<'info> {
     #[account(mut, signer)]
     pub signer: Signer<'info>,
-    #[account(mut)]
+    #[account(mut, seeds = [b"approve tx"], bump)]
     pub transaction: Account<'info, Transaction>,
     #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
     pub multisig: Account<'info, Multisig>,

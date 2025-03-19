@@ -50,7 +50,7 @@ fn main() -> Result<()> {
     let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id); //bump??
     let (multisig_pda, _) = Pubkey::find_program_address(&[b"multisig"], &program_id);
 
-    let approval_list = vec![admin.pubkey()]; // Example signer list
+    let approval_list = vec![admin.pubkey(), admin.pubkey(), admin.pubkey(), admin.pubkey()]; // Example signer list
 
     let tx = program
         .request()
@@ -62,7 +62,7 @@ fn main() -> Result<()> {
         })
         .args(multisig::instruction::Initialize {
             approval_list,
-            threshold: 1,
+            threshold: 2,
             initial_balance: 100_000_000, // 0.1 SOL
         })
         .payer(admin.clone())
@@ -101,5 +101,30 @@ fn main() -> Result<()> {
         })?;
         
     println!("Propose a multisig tx - Signature: {}", tx);
+
+
+    let (threshold_change_tx_pda, _) = Pubkey::find_program_address(&[b"threshold change tx"], &program_id);
+
+        let tx = program
+        .request()
+        .accounts(multisig::accounts::ProposeThresholdChangeContext {
+            proposer: admin.pubkey(),
+            multisig: multisig_pda,
+            transaction: threshold_change_tx_pda,
+            system_program: solana_program::system_program::ID,
+        })
+        .args(multisig::instruction::ProposeThresholdChange {
+            new_threshold: 1,
+            nonce: 0,
+        })
+        .payer(admin.clone())
+        .signer(&*admin)
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            skip_preflight: true, 
+            ..Default::default()
+        })?;
+        
+    println!("Propose a threshold change tx - Signature: {}", tx);
+
     Ok(())
 }
