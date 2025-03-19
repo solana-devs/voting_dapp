@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::utils::TransactionType;
+// use crate::utils::TransactionType;
 
 #[account]
 #[derive(InitSpace)]
@@ -12,7 +12,7 @@ pub struct Transaction {
     pub executed: bool,
     pub nonce: u64,
     // pub is_threshold_change: bool,
-    // pub new_threshold: u8,
-    pub transaction_type: TransactionType,
+    pub new_threshold: u8,
+    // pub transaction_type: TransactionType,
     pub bump: u8,
 }

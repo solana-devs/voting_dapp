@@ -10,10 +10,10 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
 
     let tx = &mut ctx.accounts.transaction;
     tx.multisig = multisig.key();
-    tx.approvals = vec![*ctx.accounts.proposer.key]; // Auto-approve
+    tx.approvals = vec![]; // Auto-approve if *ctx.accounts.proposer.key is in vec
     tx.executed = false;
     tx.nonce = nonce;
-    tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
+    // tx.transaction_type = TransactionType::ThresholdChange(new_threshold);
 
     emit!(TransactionEvent {
         tx_key: tx.key(),
@@ -26,9 +26,15 @@ pub fn handle_propose_threshold_change(ctx: Context<ProposeThresholdChangeContex
 pub struct ProposeThresholdChangeContext<'info> {
     #[account(mut, signer)]
     pub proposer: Signer<'info>,
-    #[account(mut, seeds = [b"multisig"], bump = multisig.bump)]
+    #[account(mut, seeds = [b"multisig"], bump)]
     pub multisig: Account<'info, Multisig>,
-    #[account(init, payer = proposer, space = 8 + Transaction::INIT_SPACE)]
+    #[account(
+        init, 
+        payer = proposer, 
+        space = 8 + Transaction::INIT_SPACE, 
+        seeds = [b"threshold change tx"], 
+        bump
+    )]
     pub transaction: Account<'info, Transaction>,
     pub system_program: Program<'info, System>,
 }

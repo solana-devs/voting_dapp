@@ -111,7 +111,7 @@ export type Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -155,9 +155,62 @@ export type Multisig = {
       "args": []
     },
     {
-      "name": "deleteApproval",
+      "name": "approveThresholdChange",
       "docs": [
-        "Admin deletes an approval"
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deleteTxApproval",
+      "docs": [
+        "Admin deletes tx approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deleteThresholdChangeApproval",
+      "docs": [
+        "Admin deletes a threshold change approval"
       ],
       "accounts": [
         {
@@ -302,33 +355,12 @@ export type Multisig = {
             "type": "u64"
           },
           {
-            "name": "transactionType",
-            "type": {
-              "defined": "TransactionType"
-            }
+            "name": "newThreshold",
+            "type": "u8"
           },
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    }
-  ],
-  "types": [
-    {
-      "name": "TransactionType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Transfer"
-          },
-          {
-            "name": "ThresholdChange",
-            "fields": [
-              "u8"
-            ]
           }
         ]
       }
@@ -503,7 +535,7 @@ export const IDL: Multisig = {
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -547,9 +579,62 @@ export const IDL: Multisig = {
       "args": []
     },
     {
-      "name": "deleteApproval",
+      "name": "approveThresholdChange",
       "docs": [
-        "Admin deletes an approval"
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deleteTxApproval",
+      "docs": [
+        "Admin deletes tx approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deleteThresholdChangeApproval",
+      "docs": [
+        "Admin deletes a threshold change approval"
       ],
       "accounts": [
         {
@@ -694,33 +779,12 @@ export const IDL: Multisig = {
             "type": "u64"
           },
           {
-            "name": "transactionType",
-            "type": {
-              "defined": "TransactionType"
-            }
+            "name": "newThreshold",
+            "type": "u8"
           },
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    }
-  ],
-  "types": [
-    {
-      "name": "TransactionType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Transfer"
-          },
-          {
-            "name": "ThresholdChange",
-            "fields": [
-              "u8"
-            ]
           }
         ]
       }

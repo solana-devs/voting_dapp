@@ -111,7 +111,7 @@
         {
           "name": "transaction",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -155,9 +155,62 @@
       "args": []
     },
     {
-      "name": "deleteApproval",
+      "name": "approveThresholdChange",
       "docs": [
-        "Admin deletes an approval"
+        "Admin or signer approves a threshold change"
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deleteTxApproval",
+      "docs": [
+        "Admin deletes tx approval"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "transaction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signerToRemove",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deleteThresholdChangeApproval",
+      "docs": [
+        "Admin deletes a threshold change approval"
       ],
       "accounts": [
         {
@@ -302,33 +355,12 @@
             "type": "u64"
           },
           {
-            "name": "transactionType",
-            "type": {
-              "defined": "TransactionType"
-            }
+            "name": "newThreshold",
+            "type": "u8"
           },
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    }
-  ],
-  "types": [
-    {
-      "name": "TransactionType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Transfer"
-          },
-          {
-            "name": "ThresholdChange",
-            "fields": [
-              "u8"
-            ]
           }
         ]
       }
@@ -389,6 +421,6 @@
     }
   ],
   "metadata": {
-    "address": "CZBpveVCdm1FonLNcT7koDnZxpAykq2nKP2hXaYhEfwd"
+    "address": "CYxiCkyVH32m2LPwm7jGYwDfk1E5fmTbbVGqs8W7ijHp"
   }
 }

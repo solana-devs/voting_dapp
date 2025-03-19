@@ -10,8 +10,17 @@ pub use propose_threshold_change::*;
 pub mod approve_transaction;
 pub use approve_transaction::*;
 
-pub mod delete_approval;
-pub use delete_approval::*;
+pub mod approve_threshold_change;
+pub use approve_threshold_change::*;
+
+pub mod delete_tx_approval;
+pub use delete_tx_approval::*;
+
+pub mod delete_threshold_change_approval;
+pub use delete_threshold_change_approval::*;
 
 pub mod execute_transaction;
 pub use execute_transaction::*;
+
+pub mod execute_threshold_change;
+pub use execute_threshold_change::*;
