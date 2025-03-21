@@ -6,12 +6,12 @@ mod states;
 pub mod instructions;
 
 use instructions::*;
+use crate::utils::TransactionType;
 
 declare_id!("CYxiCkyVH32m2LPwm7jGYwDfk1E5fmTbbVGqs8W7ijHp");
 
 #[program]
 pub mod multisig {
-    // use anchor_lang::solana_program::nonce;
 
     use super::*;
 
@@ -20,44 +20,28 @@ pub mod multisig {
         handle_initialize(ctx, approval_list, threshold, initial_balance)
     }
 
-    /// Propose a transfer transaction
-    pub fn propose_transaction(
-        ctx: Context<ProposeTransactionContext>, 
-        target: Pubkey, 
-        amount: u64, 
+    /// Propose a transfer transaction or threshold change
+    pub fn propose(
+        ctx: Context<ProposeContext>, 
         nonce: u64, 
+        tx_type: TransactionType,
         is_auto_approve: bool,
     ) -> Result<()> {
-        handle_propose_transaction(ctx, target, amount, nonce, is_auto_approve)
+        handle_propose(ctx, nonce, tx_type, is_auto_approve)
     }
 
-    /// Propose a threshold change
-    pub fn propose_threshold_change(ctx: Context<ProposeThresholdChangeContext>, new_threshold: u8, nonce: u64) -> Result<()> {
-        handle_propose_threshold_change(ctx, new_threshold, nonce)
+    /// Admin or signer approves a transaction or threshold change
+    pub fn approve(ctx: Context<ApproveContext>, nonce: u64) -> Result<()> {
+        handle_approve(ctx, nonce)
     }
 
-    /// Admin or signer approves a transaction
-    pub fn approve_transaction(ctx: Context<ApproveTransactionContext>) -> Result<()> {
-        handle_approve_transaction(ctx)
-    }
-
-    /// Admin or signer approves a threshold change
-    pub fn approve_threshold_change(ctx: Context<ApproveThresholdChangeContext>) -> Result<()> {
-        handle_approve_threshold_change(ctx)
-    }
-
-    /// Admin deletes tx approval
-    pub fn delete_tx_approval(ctx: Context<DeleteTxApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
-        handle_delete_tx_approval(ctx, signer_to_remove)
-    }
-
-    /// Admin deletes a threshold change approval
-    pub fn delete_threshold_change_approval(ctx: Context<DeleteThresholdChangeApprovalContext>, signer_to_remove: Pubkey) -> Result<()> {
-        handle_delete_threshold_change_approval(ctx, signer_to_remove)
+    /// Admin deletes approval
+    pub fn delete_approval(ctx: Context<DeleteApprovalContext>, nonce: u64, signer_to_remove: Pubkey) -> Result<()> {
+        handle_delete_approval(ctx, nonce, signer_to_remove)
     }
 
     /// Execute a transaction if threshold met
-    pub fn execute_transaction(ctx: Context<ExecuteTransactionContext>) -> Result<()> {
-        handle_execute_transaction(ctx)
+    pub fn execute<'a, 'info>(ctx: Context<'a, 'a, 'a, 'info, ExecuteContext<'info>>) -> Result<()> {
+        handle_execute(ctx)
     }
 }

@@ -16,4 +16,10 @@ pub enum ErrorCode {
     AlreadyApproved,
     #[msg("Approval not found")]
     ApprovalNotFound,
+    #[msg("Amount should be greater than 0")]
+    InvalidAmount,
+    #[msg("Target must be set")]
+    InvalidTarget,
+    #[msg("Missing accounts")]
+    MissingAccounts,
 }

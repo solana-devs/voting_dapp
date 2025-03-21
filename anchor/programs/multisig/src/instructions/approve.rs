@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 use crate::errors::ErrorCode;
 use crate::states::*;
-// use crate::utils::*;
+use crate::utils::*;
 
-pub fn handle_approve_threshold_change(ctx: Context<ApproveThresholdChangeContext>) -> Result<()> {
+pub fn handle_approve(ctx: Context<ApproveContext>, nonce: u64) -> Result<()> {
     let tx = &mut ctx.accounts.transaction;
     let multisig = &ctx.accounts.multisig;
     let signer_key = ctx.accounts.signer.key();
@@ -17,14 +17,20 @@ pub fn handle_approve_threshold_change(ctx: Context<ApproveThresholdChangeContex
 
     tx.approvals.push(signer_key);
 
+    emit!(TransactionEvent {
+        tx_key: tx.key(),
+        action: "approved".to_string(),
+    });
+
     Ok(())
 }
 
 #[derive(Accounts)]
-pub struct ApproveThresholdChangeContext<'info> {
+#[instruction(nonce: u64)]
+pub struct ApproveContext<'info> {
     #[account(mut, signer)]
     pub signer: Signer<'info>,
-    #[account(mut, seeds = [b"threshold change tx"], bump)]
+    #[account(mut, seeds = [b"tx", nonce.to_le_bytes().as_ref()], bump = transaction.bump)]
     pub transaction: Account<'info, Transaction>,
     #[account(mut, seeds = [b"multisig"], bump)]
     pub multisig: Account<'info, Multisig>,

@@ -74,6 +74,26 @@ fn main() -> Result<()> {
 
     println!("Initialized multisig - Signature: {}", tx);
 
+    // let nonce = 0u64;
+    // let (tx_pda, _) = Pubkey::find_program_address(&[b"tx", &nonce.to_le_bytes()], &program_id);
+    // program
+    //     .request()
+    //     .accounts(multisig::accounts::ProposeContext {
+    //         proposer: admin.pubkey(),
+    //         multisig: multisig_pda,
+    //         transaction: tx_pda,
+    //         system_program: solana_program::system_program::ID,
+    //     })
+    //     .args(multisig::instruction::Propose {
+    //         tx_type: TransactionType::Transfer { target: admin.pubkey(), amount: 20_000_000 },
+    //         nonce,
+    //         is_auto_approve: false,
+    //     })
+    //     .payer(admin.clone())
+    //     .signer(&*admin)
+    //     .send()?;
+    // println!("Proposed - Signature: {}", tx);
+
 
     let (tx_pda, _) = Pubkey::find_program_address(&[b"transaction"], &program_id);
     // let transaction = Keypair::new();

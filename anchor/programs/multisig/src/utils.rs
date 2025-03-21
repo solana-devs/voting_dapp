@@ -1,10 +1,10 @@
 use anchor_lang::prelude::*;
 
-// #[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
-// pub enum TransactionType {
-//     Transfer,
-//     ThresholdChange(u8),
-// }
+#[derive(Clone, AnchorSerialize, AnchorDeserialize, InitSpace)]
+pub enum TransactionType {
+    Transfer { target: Pubkey, amount: u64 },
+    ThresholdChange(u8),
+}
 
 #[event]
 pub struct TransactionEvent {
@@ -12,9 +12,9 @@ pub struct TransactionEvent {
     pub action: String,
 }
 
-// #[event]
-// pub struct TransactionApprovedEvent {
-//     pub tx_key: Pubkey,
-//     pub signer: Pubkey,
-//     pub transaction_type: TransactionType,
-// }
+#[event]
+pub struct TransactionApprovedEvent {
+    pub tx_key: Pubkey,
+    pub signer: Pubkey,
+    pub transaction_type: TransactionType,
+}
