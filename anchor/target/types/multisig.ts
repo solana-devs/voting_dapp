@@ -47,9 +47,9 @@ export type Multisig = {
       ]
     },
     {
-      "name": "proposeTransaction",
+      "name": "propose",
       "docs": [
-        "Propose a transfer transaction"
+        "Propose a transfer transaction or threshold change"
       ],
       "accounts": [
         {
@@ -75,16 +75,14 @@ export type Multisig = {
       ],
       "args": [
         {
-          "name": "target",
-          "type": "publicKey"
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
           "name": "nonce",
           "type": "u64"
+        },
+        {
+          "name": "txType",
+          "type": {
+            "defined": "TransactionType"
+          }
         },
         {
           "name": "isAutoApprove",
@@ -93,20 +91,15 @@ export type Multisig = {
       ]
     },
     {
-      "name": "proposeThresholdChange",
+      "name": "approve",
       "docs": [
-        "Propose a threshold change"
+        "Admin or signer approves a transaction or threshold change"
       ],
       "accounts": [
         {
-          "name": "proposer",
+          "name": "signer",
           "isMut": true,
           "isSigner": true
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "transaction",
@@ -114,16 +107,12 @@ export type Multisig = {
           "isSigner": false
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
+          "name": "multisig",
+          "isMut": true,
           "isSigner": false
         }
       ],
       "args": [
-        {
-          "name": "newThreshold",
-          "type": "u8"
-        },
         {
           "name": "nonce",
           "type": "u64"
@@ -131,57 +120,9 @@ export type Multisig = {
       ]
     },
     {
-      "name": "approveTransaction",
+      "name": "deleteApproval",
       "docs": [
-        "Admin or signer approves a transaction"
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "approveThresholdChange",
-      "docs": [
-        "Admin or signer approves a threshold change"
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "deleteTxApproval",
-      "docs": [
-        "Admin deletes tx approval"
+        "Admin deletes approval"
       ],
       "accounts": [
         {
@@ -202,34 +143,9 @@ export type Multisig = {
       ],
       "args": [
         {
-          "name": "signerToRemove",
-          "type": "publicKey"
-        }
-      ]
-    },
-    {
-      "name": "deleteThresholdChangeApproval",
-      "docs": [
-        "Admin deletes a threshold change approval"
-      ],
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          "name": "nonce",
+          "type": "u64"
         },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
         {
           "name": "signerToRemove",
           "type": "publicKey"
@@ -237,14 +153,14 @@ export type Multisig = {
       ]
     },
     {
-      "name": "executeTransaction",
+      "name": "execute",
       "docs": [
         "Execute a transaction if threshold met"
       ],
       "accounts": [
         {
           "name": "authority",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -259,11 +175,6 @@ export type Multisig = {
         },
         {
           "name": "escrow",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "target",
           "isMut": true,
           "isSigner": false
         },
@@ -333,14 +244,6 @@ export type Multisig = {
             "type": "publicKey"
           },
           {
-            "name": "target",
-            "type": "publicKey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          },
-          {
             "name": "approvals",
             "type": {
               "vec": "publicKey"
@@ -355,8 +258,10 @@ export type Multisig = {
             "type": "u64"
           },
           {
-            "name": "newThreshold",
-            "type": "u8"
+            "name": "transactionType",
+            "type": {
+              "defined": "TransactionType"
+            }
           },
           {
             "name": "bump",
@@ -366,7 +271,58 @@ export type Multisig = {
       }
     }
   ],
+  "types": [
+    {
+      "name": "TransactionType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Transfer",
+            "fields": [
+              {
+                "name": "target",
+                "type": "publicKey"
+              },
+              {
+                "name": "amount",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "ThresholdChange",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    }
+  ],
   "events": [
+    {
+      "name": "TransactionApprovedEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "signer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "transactionType",
+          "type": {
+            "defined": "TransactionType"
+          },
+          "index": false
+        }
+      ]
+    },
     {
       "name": "TransactionEvent",
       "fields": [
@@ -418,6 +374,21 @@ export type Multisig = {
       "code": 6006,
       "name": "ApprovalNotFound",
       "msg": "Approval not found"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Amount should be greater than 0"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidTarget",
+      "msg": "Target must be set"
+    },
+    {
+      "code": 6009,
+      "name": "MissingAccounts",
+      "msg": "Missing accounts"
     }
   ]
 };
@@ -471,9 +442,9 @@ export const IDL: Multisig = {
       ]
     },
     {
-      "name": "proposeTransaction",
+      "name": "propose",
       "docs": [
-        "Propose a transfer transaction"
+        "Propose a transfer transaction or threshold change"
       ],
       "accounts": [
         {
@@ -499,16 +470,14 @@ export const IDL: Multisig = {
       ],
       "args": [
         {
-          "name": "target",
-          "type": "publicKey"
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
           "name": "nonce",
           "type": "u64"
+        },
+        {
+          "name": "txType",
+          "type": {
+            "defined": "TransactionType"
+          }
         },
         {
           "name": "isAutoApprove",
@@ -517,20 +486,15 @@ export const IDL: Multisig = {
       ]
     },
     {
-      "name": "proposeThresholdChange",
+      "name": "approve",
       "docs": [
-        "Propose a threshold change"
+        "Admin or signer approves a transaction or threshold change"
       ],
       "accounts": [
         {
-          "name": "proposer",
+          "name": "signer",
           "isMut": true,
           "isSigner": true
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "transaction",
@@ -538,16 +502,12 @@ export const IDL: Multisig = {
           "isSigner": false
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
+          "name": "multisig",
+          "isMut": true,
           "isSigner": false
         }
       ],
       "args": [
-        {
-          "name": "newThreshold",
-          "type": "u8"
-        },
         {
           "name": "nonce",
           "type": "u64"
@@ -555,57 +515,9 @@ export const IDL: Multisig = {
       ]
     },
     {
-      "name": "approveTransaction",
+      "name": "deleteApproval",
       "docs": [
-        "Admin or signer approves a transaction"
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "approveThresholdChange",
-      "docs": [
-        "Admin or signer approves a threshold change"
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "deleteTxApproval",
-      "docs": [
-        "Admin deletes tx approval"
+        "Admin deletes approval"
       ],
       "accounts": [
         {
@@ -626,34 +538,9 @@ export const IDL: Multisig = {
       ],
       "args": [
         {
-          "name": "signerToRemove",
-          "type": "publicKey"
-        }
-      ]
-    },
-    {
-      "name": "deleteThresholdChangeApproval",
-      "docs": [
-        "Admin deletes a threshold change approval"
-      ],
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          "name": "nonce",
+          "type": "u64"
         },
-        {
-          "name": "transaction",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
         {
           "name": "signerToRemove",
           "type": "publicKey"
@@ -661,14 +548,14 @@ export const IDL: Multisig = {
       ]
     },
     {
-      "name": "executeTransaction",
+      "name": "execute",
       "docs": [
         "Execute a transaction if threshold met"
       ],
       "accounts": [
         {
           "name": "authority",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -683,11 +570,6 @@ export const IDL: Multisig = {
         },
         {
           "name": "escrow",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "target",
           "isMut": true,
           "isSigner": false
         },
@@ -757,14 +639,6 @@ export const IDL: Multisig = {
             "type": "publicKey"
           },
           {
-            "name": "target",
-            "type": "publicKey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          },
-          {
             "name": "approvals",
             "type": {
               "vec": "publicKey"
@@ -779,8 +653,10 @@ export const IDL: Multisig = {
             "type": "u64"
           },
           {
-            "name": "newThreshold",
-            "type": "u8"
+            "name": "transactionType",
+            "type": {
+              "defined": "TransactionType"
+            }
           },
           {
             "name": "bump",
@@ -790,7 +666,58 @@ export const IDL: Multisig = {
       }
     }
   ],
+  "types": [
+    {
+      "name": "TransactionType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Transfer",
+            "fields": [
+              {
+                "name": "target",
+                "type": "publicKey"
+              },
+              {
+                "name": "amount",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "ThresholdChange",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    }
+  ],
   "events": [
+    {
+      "name": "TransactionApprovedEvent",
+      "fields": [
+        {
+          "name": "txKey",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "signer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "transactionType",
+          "type": {
+            "defined": "TransactionType"
+          },
+          "index": false
+        }
+      ]
+    },
     {
       "name": "TransactionEvent",
       "fields": [
@@ -842,6 +769,21 @@ export const IDL: Multisig = {
       "code": 6006,
       "name": "ApprovalNotFound",
       "msg": "Approval not found"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Amount should be greater than 0"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidTarget",
+      "msg": "Target must be set"
+    },
+    {
+      "code": 6009,
+      "name": "MissingAccounts",
+      "msg": "Missing accounts"
     }
   ]
 };
