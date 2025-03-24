@@ -6,7 +6,7 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-multisig = "CYxiCkyVH32m2LPwm7jGYwDfk1E5fmTbbVGqs8W7ijHp"
+multisig = "3aJ9rFBEoDuDMj2gxHNvV3hRGhmUtmJmMJXgR8QDBjZE"
 
 [registry]
 url = "https://api.apr.dev"

@@ -184,7 +184,12 @@ export type Multisig = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -579,7 +584,12 @@ export const IDL: Multisig = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [

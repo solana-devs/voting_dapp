@@ -184,7 +184,12 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -390,5 +395,8 @@
       "name": "MissingAccounts",
       "msg": "Missing accounts"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "3aJ9rFBEoDuDMj2gxHNvV3hRGhmUtmJmMJXgR8QDBjZE"
+  }
 }

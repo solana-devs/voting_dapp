@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-mod utils;
+pub mod utils;
 mod errors;
 mod states;
 pub mod instructions;
@@ -8,7 +8,7 @@ pub mod instructions;
 use instructions::*;
 use crate::utils::TransactionType;
 
-declare_id!("CYxiCkyVH32m2LPwm7jGYwDfk1E5fmTbbVGqs8W7ijHp");
+declare_id!("3aJ9rFBEoDuDMj2gxHNvV3hRGhmUtmJmMJXgR8QDBjZE");
 
 #[program]
 pub mod multisig {
@@ -41,7 +41,7 @@ pub mod multisig {
     }
 
     /// Execute a transaction if threshold met
-    pub fn execute<'a, 'info>(ctx: Context<'a, 'a, 'a, 'info, ExecuteContext<'info>>) -> Result<()> {
-        handle_execute(ctx)
+    pub fn execute<'a, 'info>(ctx: Context<'a, 'a, 'a, 'info, ExecuteContext<'info>>, nonce: u64) -> Result<()> {
+        handle_execute(ctx, nonce)
     }
 }
