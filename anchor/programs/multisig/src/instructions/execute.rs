@@ -4,7 +4,7 @@ use crate::errors::ErrorCode;
 use crate::states::*;
 use crate::utils::*;
 
-    pub fn handle_execute<'a, 'info>(ctx: Context<'a, 'a, 'a, 'info, ExecuteContext<'info>>) -> Result<()> {
+    pub fn handle_execute<'a, 'info>(ctx: Context<'a, 'a, 'a, 'info, ExecuteContext<'info>>, nonce: u64) -> Result<()> {
         let tx = &mut ctx.accounts.transaction;
         let multisig = &mut ctx.accounts.multisig;
         let authority_key = ctx.accounts.authority.key();
@@ -63,9 +63,6 @@ pub struct ExecuteContext<'info> {
     pub multisig: Account<'info, Multisig>,
     #[account(mut, seeds = [b"escrow"], bump)]
     pub escrow: Account<'info, Escrow>,
-    // #[account(mut)]
-    // pub target: AccountInfo<'info>,
     
     pub system_program: Program<'info, System>,
-    
 }

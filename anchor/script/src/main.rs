@@ -50,7 +50,10 @@ fn main() -> Result<()> {
     let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id); //bump??
     let (multisig_pda, _) = Pubkey::find_program_address(&[b"multisig"], &program_id);
 
-    let approval_list = vec![admin.pubkey(), admin.pubkey(), admin.pubkey(), admin.pubkey()]; // Example signer list
+    // let s = Pubkey::from_str("8k5334w4LQ8KcCR3pPQ2bA5cX5rwXyHtmzSNnzwLcZt4").unwrap();
+    let member2 = Keypair::new();
+
+    let approval_list = vec![admin.pubkey(), member2.pubkey()]; 
 
     let tx = program
         .request()
@@ -74,114 +77,112 @@ fn main() -> Result<()> {
 
     println!("Initialized multisig - Signature: {}", tx);
 
-    // let nonce = 0u64;
-    // let (tx_pda, _) = Pubkey::find_program_address(&[b"tx", &nonce.to_le_bytes()], &program_id);
-    // program
-    //     .request()
-    //     .accounts(multisig::accounts::ProposeContext {
-    //         proposer: admin.pubkey(),
-    //         multisig: multisig_pda,
-    //         transaction: tx_pda,
-    //         system_program: solana_program::system_program::ID,
-    //     })
-    //     .args(multisig::instruction::Propose {
-    //         tx_type: TransactionType::Transfer { target: admin.pubkey(), amount: 20_000_000 },
-    //         nonce,
-    //         is_auto_approve: false,
-    //     })
-    //     .payer(admin.clone())
-    //     .signer(&*admin)
-    //     .send()?;
-    // println!("Proposed - Signature: {}", tx);
-
-
-    let (tx_pda, _) = Pubkey::find_program_address(&[b"transaction"], &program_id);
-    // let transaction = Keypair::new();
+    let (tx_ex, _bump) = Pubkey::find_program_address(&[b"tx", &0u64.to_le_bytes()], &program_id);
 
         let tx = program
         .request()
-        .accounts(multisig::accounts::ProposeTransactionContext {
+        .accounts(multisig::accounts::ProposeContext {
             proposer: admin.pubkey(),
             multisig: multisig_pda,
-            transaction: tx_pda,
+            transaction: tx_ex,
             system_program: solana_program::system_program::ID,
         })
-        .args(multisig::instruction::ProposeTransaction {
-            target: admin.pubkey(),
-            amount: 20_000_000, // 0.02 SOL
+        .args(multisig::instruction::Propose {
             nonce: 0,
+            tx_type: multisig::utils::TransactionType::Transfer {
+                target: admin.pubkey(),
+                amount: 20_000_000,
+            },
             is_auto_approve: true,
         })
         .payer(admin.clone())
         .signer(&*admin)
         .send_with_spinner_and_config(RpcSendTransactionConfig {
             skip_preflight: true, //"true" hides detailed errors. Turned it off for better logs -> had "RPC response error -32002: Transaction simulation failed: Blockhash not found", so set to true again
-            max_retries: Some(5),
             ..Default::default()
         })?;
         
-    println!("Propose a multisig tx - Signature: {}", tx);
+    println!("Proposed - Signature: {}", tx);
 
-
-    let (threshold_change_tx_pda, _) = Pubkey::find_program_address(&[b"threshold change tx"], &program_id);
-
-        let tx = program
-        .request()
-        .accounts(multisig::accounts::ProposeThresholdChangeContext {
-            proposer: admin.pubkey(),
-            multisig: multisig_pda,
-            transaction: threshold_change_tx_pda,
-            system_program: solana_program::system_program::ID,
-        })
-        .args(multisig::instruction::ProposeThresholdChange {
-            new_threshold: 1,
-            nonce: 0,
-        })
-        .payer(admin.clone())
-        .signer(&*admin)
-        .send_with_spinner_and_config(RpcSendTransactionConfig {
-            skip_preflight: true, 
-            ..Default::default()
-        })?;
+// Error: AlreadyApproved as the test is with the signer itself
+    //     let tx = program
+    //     .request()
+    //     .accounts(multisig::accounts::ApproveContext {
+    //         signer: admin.pubkey(),
+    //         transaction: tx_ex,
+    //         multisig: multisig_pda,
+    //     })
+    //     .args(multisig::instruction::Approve {
+    //         nonce: 0,
+    //     })
+    //     .payer(admin.clone())
+    //     .signer(&*admin)
+    //     .send_with_spinner_and_config(RpcSendTransactionConfig {
+    //         skip_preflight: true, 
+    //         ..Default::default()
+    //     })?;
         
-    println!("Propose a threshold change tx - Signature: {}", tx);
-
-
-        let tx = program
-        .request()
-        .accounts(multisig::accounts::ApproveThresholdChangeContext {
-            signer: admin.pubkey(),
-            transaction: threshold_change_tx_pda,
-            multisig: multisig_pda,
-        })
-        .args(multisig::instruction::ApproveThresholdChange {})
-        .payer(admin.clone())
-        .signer(&*admin)
-        .send_with_spinner_and_config(RpcSendTransactionConfig {
-            skip_preflight: true, 
-            ..Default::default()
-        })?;
-        
-    println!("Approved threshold change - Signature: {}", tx);
+    // println!("Approved - Signature: {}", tx);
 
     let tx = program
         .request()
-        .accounts(multisig::accounts::DeleteThresholdChangeApprovalContext {
-            admin: admin.pubkey(),
-            transaction: threshold_change_tx_pda,
+        .accounts(multisig::accounts::ApproveContext {
+            signer: member2.pubkey(),
+            transaction: tx_ex,
             multisig: multisig_pda,
         })
-        .args(multisig::instruction::DeleteThresholdChangeApproval {
-            signer_to_remove: admin.pubkey(),
+        .args(multisig::instruction::Approve {
+            nonce: 0,
         })
         .payer(admin.clone())
-        .signer(&*admin)
+        .signer(&member2)
         .send_with_spinner_and_config(RpcSendTransactionConfig {
             skip_preflight: true, 
             ..Default::default()
         })?;
         
-    println!("Removed threshold change signer - Signature: {}", tx);
+    println!("Approved by member2 - Signature: {}", tx);
+
+// works    
+    // let tx = program
+    //     .request()
+    //     .accounts(multisig::accounts::DeleteApprovalContext {
+    //         admin: admin.pubkey(),
+    //         transaction: tx_ex,
+    //         multisig: multisig_pda,
+    //     })
+    //     .args(multisig::instruction::DeleteApproval {
+    //         nonce: 0,
+    //         signer_to_remove: admin.pubkey(),
+    //     })
+    //     .payer(admin.clone())
+    //     .signer(&*admin)
+    //     .send_with_spinner_and_config(RpcSendTransactionConfig {
+    //         skip_preflight: true, 
+    //         ..Default::default()
+    //     })?;
+        
+    // println!("Deleted - Signature: {}", tx);
+
+    
+
+    let tx = program
+    .request()
+    .accounts(multisig::accounts::ExecuteContext {
+        authority: admin.pubkey(),
+        transaction: tx_ex,
+        multisig: multisig_pda,
+        escrow: escrow_pda,
+        system_program: solana_program::system_program::ID,
+    })
+    .args(multisig::instruction::Execute {nonce: 0})
+    .payer(admin.clone())
+    .signer(&*admin)
+    .send_with_spinner_and_config(RpcSendTransactionConfig {
+        skip_preflight: true, 
+        ..Default::default()
+    })?;  
+    println!("Executed - Signature: {}", tx);
 
     Ok(())
 }

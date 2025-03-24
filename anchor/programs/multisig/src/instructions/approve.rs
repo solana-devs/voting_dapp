@@ -30,7 +30,7 @@ pub fn handle_approve(ctx: Context<ApproveContext>, nonce: u64) -> Result<()> {
 pub struct ApproveContext<'info> {
     #[account(mut, signer)]
     pub signer: Signer<'info>,
-    #[account(mut, seeds = [b"tx", nonce.to_le_bytes().as_ref()], bump = transaction.bump)]
+    #[account(mut, seeds = [b"tx", nonce.to_le_bytes().as_ref()], bump)]
     pub transaction: Account<'info, Transaction>,
     #[account(mut, seeds = [b"multisig"], bump)]
     pub multisig: Account<'info, Multisig>,
