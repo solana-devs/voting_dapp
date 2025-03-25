@@ -17,9 +17,8 @@ use crate::utils::*;
     match tx.transaction_type {
         TransactionType::Transfer { target, amount } => {
             // Transfer SOL from escrow to target
-            require!(ctx.remaining_accounts.len() >= 2, ErrorCode::MissingAccounts); // escrow and target
-            let escrow = &ctx.remaining_accounts[0];
-            let target_account = &ctx.remaining_accounts[1];
+            require!(ctx.remaining_accounts.len() >= 1, ErrorCode::MissingAccounts); // target
+            let target_account = &ctx.remaining_accounts[0];
             require!(target_account.key() == target, ErrorCode::InvalidTarget);
 
             let cpi_accounts = Transfer {
@@ -63,6 +62,6 @@ pub struct ExecuteContext<'info> {
     pub multisig: Account<'info, Multisig>,
     #[account(mut, seeds = [b"escrow"], bump)]
     pub escrow: Account<'info, Escrow>,
-    
+
     pub system_program: Program<'info, System>,
 }
