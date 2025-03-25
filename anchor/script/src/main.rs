@@ -50,7 +50,7 @@ fn main() -> Result<()> {
     let (escrow_pda, _) = Pubkey::find_program_address(&[b"escrow"], &program_id); //bump??
     let (multisig_pda, _) = Pubkey::find_program_address(&[b"multisig"], &program_id);
 
-    // let s = Pubkey::from_str("8k5334w4LQ8KcCR3pPQ2bA5cX5rwXyHtmzSNnzwLcZt4").unwrap();
+    let s = Pubkey::from_str("8k5334w4LQ8KcCR3pPQ2bA5cX5rwXyHtmzSNnzwLcZt4").unwrap();
     let member2 = Keypair::new();
 
     let approval_list = vec![admin.pubkey(), member2.pubkey()]; 
@@ -175,6 +175,7 @@ fn main() -> Result<()> {
         escrow: escrow_pda,
         system_program: solana_program::system_program::ID,
     })
+    .remaining_accounts(vec![s])
     .args(multisig::instruction::Execute {nonce: 0})
     .payer(admin.clone())
     .signer(&*admin)
