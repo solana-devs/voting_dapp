@@ -11,8 +11,10 @@ use crate::utils::*;
 
     require!(multisig.approvals.contains(&ctx.accounts.authority.key()), ErrorCode::Unauthorized);
     require!(!tx.executed, ErrorCode::AlreadyExecuted);
-    require!(tx.nonce == multisig.nonce, ErrorCode::InvalidNonce);
+    require!(tx.nonce == multisig.nonce, ErrorCode::InvalidNonce); // prevents replaying old transactions
     require!(tx.approvals.len() as u8 >= multisig.threshold, ErrorCode::NotEnoughApprovals);
+    
+    tx.executed = true; // Marked as executed to prevent reentrancy or double execution
 
     match tx.transaction_type {
         TransactionType::Transfer { target, amount } => {
@@ -26,8 +28,8 @@ use crate::utils::*;
                 to: target_account.to_account_info(), // target from TransactionType
             };
             let cpi_program = ctx.accounts.system_program.to_account_info();
-            let seeds: &[&[u8]] = &[b"escrow", &[ctx.accounts.escrow.bump]]; // escrow PDA’s seeds
-            let signer_seeds = &[seeds]; // wraps it in an outer slice, making it &[&[&[u8]]]—a list with one signer’s seed set
+            let signer_seeds: &[&[&[u8]]] = &[&[b"escrow", &[ctx.accounts.escrow.bump]]]; // escrow PDA’s seeds
+            // let signer_seeds = &[seeds]; // wraps it in an outer slice, making it &[&[&[u8]]]—a list with one signer’s seed set
             let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
             transfer(cpi_ctx, amount)?;
         }
@@ -37,8 +39,7 @@ use crate::utils::*;
         }
     }
 
-    multisig.nonce += 1;  
-    tx.executed = true;
+    multisig.nonce += 1;  // Increment nonce after successful execution to ensure uniqueness for future transactions
 
     emit!(TransactionEvent {
         tx_key: tx.key(),

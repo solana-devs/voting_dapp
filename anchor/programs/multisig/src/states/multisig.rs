@@ -9,4 +9,5 @@ pub struct Multisig {
     pub threshold: u8,
     pub nonce: u64,
     pub bump: u8,
+
 }

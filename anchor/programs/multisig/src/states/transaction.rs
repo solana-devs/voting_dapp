@@ -7,6 +7,11 @@ pub struct Transaction {
     pub multisig: Pubkey,
     // pub target: Pubkey,
     // pub amount: u64, //handled by TransactionType enum
+    // pub program_id: Pubkey,
+    // #[max_len(20)]
+    // pub accounts: Vec<TransactionAccount>,
+    // #[max_len(30)]
+    // pub data: Vec<u8>,
     #[max_len(10)]
     pub approvals: Vec<Pubkey>,
     pub executed: bool,
@@ -16,3 +21,4 @@ pub struct Transaction {
     pub transaction_type: TransactionType,
     pub bump: u8,
 }
+
