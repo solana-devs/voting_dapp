@@ -307,28 +307,6 @@
   ],
   "events": [
     {
-      "name": "TransactionApprovedEvent",
-      "fields": [
-        {
-          "name": "txKey",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "signer",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transactionType",
-          "type": {
-            "defined": "TransactionType"
-          },
-          "index": false
-        }
-      ]
-    },
-    {
       "name": "TransactionEvent",
       "fields": [
         {
@@ -397,6 +375,6 @@
     }
   ],
   "metadata": {
-    "address": "3aJ9rFBEoDuDMj2gxHNvV3hRGhmUtmJmMJXgR8QDBjZE"
+    "address": "AcaCRmiqCsJafJqcSBgjSYbZ6gk2445kxZChkkbp9FH9"
   }
 }

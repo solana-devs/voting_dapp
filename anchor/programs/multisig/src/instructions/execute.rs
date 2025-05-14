@@ -29,7 +29,7 @@ use crate::utils::*;
             };
             let cpi_program = ctx.accounts.system_program.to_account_info();
             let signer_seeds: &[&[&[u8]]] = &[&[b"escrow", &[ctx.accounts.escrow.bump]]]; // escrow PDA’s seeds
-            // let signer_seeds = &[seeds]; // wraps it in an outer slice, making it &[&[&[u8]]]—a list with one signer’s seed set
+           
             let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
             transfer(cpi_ctx, amount)?;
         }

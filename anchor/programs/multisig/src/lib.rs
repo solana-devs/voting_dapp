@@ -1,3 +1,27 @@
+// Program Flow
+
+// Initialize:
+// Admin creates a multisig with signers, a threshold, and an escrow account.
+// Stores admin, signers, threshold, and escrow bump for signing.
+
+// Propose:
+// Admin or signer proposes a Transfer (with target and amount) or ThresholdChange (new threshold).
+// Uses a unique nonce to generate a transaction PDA ([b"tx", nonce.to_le_bytes()]).
+// Optionally auto-approves for the proposer.
+
+// Approve:
+// Admin or signers add their approval to a transaction.
+// Checks prevent duplicate or unauthorized approvals.
+
+// Delete Approval:
+// Admin can remove an approval from a transaction, allowing corrections or resets.
+
+// Execute:
+// If approvals meet the threshold, admin or signer executes:
+// Transfer: Moves SOL from escrow to the target using CPI.
+// ThresholdChange: Updates the multisig threshold.
+// Increments nonce to prevent replays and marks the transaction as executed.
+
 use anchor_lang::prelude::*;
 
 pub mod utils;
@@ -8,7 +32,7 @@ pub mod instructions;
 use instructions::*;
 use crate::utils::TransactionType;
 
-declare_id!("3aJ9rFBEoDuDMj2gxHNvV3hRGhmUtmJmMJXgR8QDBjZE");
+declare_id!("AcaCRmiqCsJafJqcSBgjSYbZ6gk2445kxZChkkbp9FH9");
 
 #[program]
 pub mod multisig {

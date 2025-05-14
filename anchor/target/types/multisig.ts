@@ -307,28 +307,6 @@ export type Multisig = {
   ],
   "events": [
     {
-      "name": "TransactionApprovedEvent",
-      "fields": [
-        {
-          "name": "txKey",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "signer",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transactionType",
-          "type": {
-            "defined": "TransactionType"
-          },
-          "index": false
-        }
-      ]
-    },
-    {
       "name": "TransactionEvent",
       "fields": [
         {
@@ -706,28 +684,6 @@ export const IDL: Multisig = {
     }
   ],
   "events": [
-    {
-      "name": "TransactionApprovedEvent",
-      "fields": [
-        {
-          "name": "txKey",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "signer",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transactionType",
-          "type": {
-            "defined": "TransactionType"
-          },
-          "index": false
-        }
-      ]
-    },
     {
       "name": "TransactionEvent",
       "fields": [

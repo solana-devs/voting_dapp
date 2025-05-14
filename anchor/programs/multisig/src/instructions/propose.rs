@@ -4,9 +4,7 @@ use crate::states::*;
 use crate::utils::*;
 
 pub fn handle_propose(
-    ctx: Context<ProposeContext>, 
-    // target: Pubkey, 
-    // amount: u64, 
+    ctx: Context<ProposeContext>,  
     nonce: u64,
     tx_type: TransactionType, 
     is_auto_approve: bool,
@@ -25,13 +23,6 @@ pub fn handle_propose(
     };
     tx.executed = false;
     tx.nonce = nonce;
- 
-    // tx.transaction_type = TransactionType::Transfer;
-    // tx.bump = ctx.bumps.transaction;
-
-    // if let TransactionType::ThresholdChange(new_threshold) = tx.transaction_type {
-    //     require!(new_threshold as usize <= multisig.approvals.len(), ErrorCode::InvalidThreshold);
-    // }
 
     match tx_type {
         TransactionType::Transfer { target, amount } => {
