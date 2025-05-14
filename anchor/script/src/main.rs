@@ -166,24 +166,24 @@ fn main() -> Result<()> {
 
     
 
-    let tx = program
-    .request()
-    .accounts(multisig::accounts::ExecuteContext {
-        authority: admin.pubkey(),
-        transaction: tx_ex,
-        multisig: multisig_pda,
-        escrow: escrow_pda,
-        system_program: solana_program::system_program::ID,
-    })
-    .remaining_accounts(vec![s])
-    .args(multisig::instruction::Execute {nonce: 0})
-    .payer(admin.clone())
-    .signer(&*admin)
-    .send_with_spinner_and_config(RpcSendTransactionConfig {
-        skip_preflight: true, 
-        ..Default::default()
-    })?;  
-    println!("Executed - Signature: {}", tx);
+    // let tx = program
+    // .request()
+    // .accounts(multisig::accounts::ExecuteContext {
+    //     authority: admin.pubkey(),
+    //     transaction: tx_ex,
+    //     multisig: multisig_pda,
+    //     escrow: escrow_pda,
+    //     system_program: solana_program::system_program::ID,
+    // })
+    // .remaining_accounts(vec![s])
+    // .args(multisig::instruction::Execute {nonce: 0})
+    // .payer(admin.clone())
+    // .signer(&*admin)
+    // .send_with_spinner_and_config(RpcSendTransactionConfig {
+    //     skip_preflight: true, 
+    //     ..Default::default()
+    // })?;  
+    // println!("Executed - Signature: {}", tx);
 
     Ok(())
 }

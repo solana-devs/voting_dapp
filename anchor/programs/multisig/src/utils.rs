@@ -12,9 +12,3 @@ pub struct TransactionEvent {
     pub action: String,
 }
 
-#[event]
-pub struct TransactionApprovedEvent {
-    pub tx_key: Pubkey,
-    pub signer: Pubkey,
-    pub transaction_type: TransactionType,
-}
